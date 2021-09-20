@@ -1,4 +1,10 @@
-# Raylib for Swift [![Windows](https://github.com/STREGAsGate/Raylib/actions/workflows/Windows.yml/badge.svg)](https://github.com/STREGAsGate/Raylib/actions/workflows/Windows.yml) [![macOS](https://github.com/STREGAsGate/Raylib/actions/workflows/macOS.yml/badge.svg)](https://github.com/STREGAsGate/Raylib/actions/workflows/macOS.yml) [![Linux](https://github.com/STREGAsGate/Raylib/actions/workflows/Linux.yml/badge.svg)](https://github.com/STREGAsGate/Raylib/actions/workflows/Linux.yml) 
+# Raylib for Swift
+
+[![Windows](https://github.com/STREGAsGate/Raylib/actions/workflows/Windows.yml/badge.svg)](https://github.com/STREGAsGate/Raylib/actions/workflows/Windows.yml) [![macOS](https://github.com/STREGAsGate/Raylib/actions/workflows/macOS.yml/badge.svg)](https://github.com/STREGAsGate/Raylib/actions/workflows/macOS.yml) [![Linux](https://github.com/STREGAsGate/Raylib/actions/workflows/Linux.yml/badge.svg)](https://github.com/STREGAsGate/Raylib/actions/workflows/Linux.yml) 
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/stregasgate?style=social)](https://twitter.com/stregasgate)
+[![Subreddit subscribers](https://img.shields.io/reddit/subreddit-subscribers/stregasgate?style=social)](https://www.reddit.com/r/stregasgate/)
+[![Discord](https://img.shields.io/discord/641809158051725322?label=Hang%20Out&logo=Discord&style=social)](https://discord.gg/5JdRJhD)
 
 This package brings Raylib to Swift.
 
@@ -15,6 +21,7 @@ let image = Image(color: .green, width: 256, height: 256)
 Still a lot of Swifty changes to be made.
 
 ---
+# Official Readme
 
 <img align="left" src="https://github.com/raysan5/raylib/blob/master/logo/raylib_logo_animation.gif" width="288px">
 
