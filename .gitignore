@@ -1,0 +1,18 @@
+
+#Swift
+.build
+Package.resolved
+
+#Apple
+.DS_Store
+.icloud
+
+#Xcode
+*.xcuserdatad
+*.xcworkspace
+
+#Visual Studio
+.vs
+
+#Visual Studio Code
+.vscode
