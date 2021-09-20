@@ -2,4 +2,4 @@
 * text=auto
 
 # Don't calculate the Raylib source when determining project languages
-Sources/_RaylibC/* linguist-vendored=false
+Sources/_RaylibC/* linguist-vendored
