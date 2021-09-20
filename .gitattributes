@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Don't calculate the Raylib source when determining project languages
+Sources/_RaylibC/* linguist-vendored=false
