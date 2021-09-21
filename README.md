@@ -30,7 +30,7 @@ As an example `Image`, now has new initializers.
 ```swift
 let image = Image(color: .green, width: 256, height: 256)
 ```
-Doing this for the entire API will increase discoverability and make Raylib for Swift a more Swifty expirience.
+Doing this for the entire API will increase discoverability and make Raylib for Swift a more Swifty experience.
 
 ---
 # Official Readme
