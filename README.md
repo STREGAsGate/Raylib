@@ -20,7 +20,7 @@ On Windows and macOS you only need Swift. On linux, you need other dependencies.
 ## Swifty
 Original global functions are now static members of the `Raylib` type.
 ```swift
-Raylib.initWindow(screenWidth, screenheight, "raylib [core] example - basic window")
+Raylib.initWindow(screenWidth, screenheight, "My First Raylib Window!")
 ```
 
 ## To Do
@@ -30,7 +30,7 @@ As an example `Image`, now has new initializers.
 ```swift
 let image = Image(color: .green, width: 256, height: 256)
 ```
-Doing this for the entire API will increase discoverability and make Raylib for Swift a more Sifty expirience.
+Doing this for the entire API will increase discoverability and make Raylib for Swift a more Swifty expirience.
 
 ---
 # Official Readme
