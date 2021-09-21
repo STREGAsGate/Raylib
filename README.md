@@ -10,12 +10,12 @@
 
 This package brings Raylib to Swift.
 ## Setup
-Raylib for Swift uses Swift's C interoperability and compiler to build Raylib from source code. 
+Raylib for Swift uses Swift's C interoperability and compiler to build Raylib from source code.
 So there's no setup required, just add the package as a dependency and start making games!
 ```swift
 .package(url: "https://github.com/STREGAsGate/Raylib.git", .branch("master"))
 ```
-On Windows and macOS you only need Swift. On linux, you need other dependencies. See [Working on GNU Linux](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux).
+On Windows and macOS you only need Swift. For linux, see [install required libraries](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux#install-required-libraries).
 
 ## Swifty
 Original global functions are now static members of the `Raylib` type.
