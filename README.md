@@ -9,18 +9,28 @@
 [![Discord](https://img.shields.io/discord/641809158051725322?label=Hang%20Out&logo=Discord&style=social)](https://discord.gg/5JdRJhD)
 
 This package brings Raylib to Swift.
+## Setup
+Raylib for Swift uses Swift's C interoperability and compiler to build Raylib from source code. 
+So there's no setup required, just add the package as a dependency and start making games!
+```swift
+.package(url: "https://github.com/STREGAsGate/Raylib.git", .branch("master"))
+```
+On Windows and macOS you only need Swift. On linux, you need other dependencies. See [Working on GNU Linux](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux).
 
+## Swifty
 Original global functions are now static members of the `Raylib` type.
 ```swift
 Raylib.initWindow(screenWidth, screenheight, "raylib [core] example - basic window")
 ```
 
-Some raylib types, such as `Image`, now have functionality attached, along with new initializers.
+## To Do
+It's a goal of this project to have all the global functions available on their respective types as members.
+
+As an example `Image`, now has new initializers.
 ```swift
 let image = Image(color: .green, width: 256, height: 256)
 ```
-
-Still a lot of Swifty changes to be made.
+Doing this for the entire API will increase discoverability and make Raylib for Swift a more Sifty expirience.
 
 ---
 # Official Readme
