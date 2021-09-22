@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2021 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
- * Licensed under Apache License v2.0
+ * Licensed under MIT License
  *
- * Find me on https://www.YouTube.com/STREGAsGate, or social media @STREGAsGate
+ * http://stregasgate.com
  */
 
 import _RaylibC
@@ -122,6 +122,11 @@ import _RaylibC
 
 // VR Stereo rendering configuration for simulator
 @_exported import struct _RaylibC.VrStereoConfig
+
+#if canImport(Foundation)
+@_exported import struct Foundation.URL
+@_exported import class Foundation.Bundle
+#endif
 
 public struct Raylib {
     public var version: String {
