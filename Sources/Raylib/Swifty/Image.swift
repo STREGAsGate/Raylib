@@ -115,25 +115,26 @@ public extension Image {
         self = Raylib.genImageChecked(width, height, checkerdXCount, checkerYCount, color1, color2)
     }
 }
-//
-///// Generate image: white noise
-//@_transparent
-//static func genImageWhiteNoise(_ width: Int32, _ height: Int32, _ factor: Float) -> Image {
-//    return _RaylibC.GenImageWhiteNoise(width, height, factor)
-//}
-//
-///// Generate image: perlin noise
-//@_transparent
-//static func genImagePerlinNoise(_ width: Int32, _ height: Int32, _ offsetX: Int32, _ offsetY: Int32, _ scale: Float) -> Image {
-//    return _RaylibC.GenImagePerlinNoise(width, height, offsetX, offsetY, scale)
-//}
-//
-///// Generate image: cellular algorithm. Bigger tileSize means bigger cells
-//@_transparent
-//static func genImageCellular(_ width: Int32, _ height: Int32, _ tileSize: Int32) -> Image {
-//    return _RaylibC.GenImageCellular(width, height, tileSize)
-//}
-//}
+
+public extension Image {
+    /// Generate image: white noise
+    @_transparent
+    init(whiteNoiseFactor factor: Float, width: Int32, height: Int32) {
+        self = Raylib.genImageWhiteNoise(width, height, factor)
+    }
+    
+    /// Generate image: perlin noise
+    @_transparent
+    init(perlinNoiseScale scale: Float, width: Int32, height: Int32, offsetX: Int32, offsetY: Int32) {
+        self = Raylib.genImagePerlinNoise(width, height, offsetX, offsetY, scale)
+    }
+    
+    /// Generate image: cellular algorithm. Bigger tileSize means bigger cells
+    @_transparent
+    static func genImageCellular(cellularWithTileSize tileSize: Int32, width: Int32, height: Int32) {
+        self = Raylib.genImageCellular(width, height, tileSize)
+    }
+}
 //
 ////MARK: - Image manipulation functions
 //
