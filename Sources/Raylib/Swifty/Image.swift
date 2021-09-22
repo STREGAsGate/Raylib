@@ -131,7 +131,7 @@ public extension Image {
     
     /// Generate image: cellular algorithm. Bigger tileSize means bigger cells
     @_transparent
-    static func genImageCellular(cellularWithTileSize tileSize: Int32, width: Int32, height: Int32) {
+    init(cellularWithTileSize tileSize: Int32, width: Int32, height: Int32) {
         self = Raylib.genImageCellular(width, height, tileSize)
     }
 }
