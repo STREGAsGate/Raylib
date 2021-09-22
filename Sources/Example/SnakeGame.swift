@@ -111,7 +111,7 @@ extension SnakeGame {
 extension SnakeGame {
     func updateGame() {
         if isGameOver == false {
-            if Raylib.isKeyPressed(.p) {
+            if Raylib.isKeyPressed(.letterP) {
                 isGamePaused = !isGamePaused
             }
             
