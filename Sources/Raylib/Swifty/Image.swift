@@ -30,8 +30,13 @@ import Foundation
 
 public extension Image {
     @_transparent
-    init(_ url: URL) {
+    init(url: URL) {
         self = Raylib.loadImage(url.path)
+    }
+    
+    @available(*, deprecated, renamed: "init(url:)")
+    init(_ url: URL) {
+        self.init(url: url)
     }
 }
 #endif
