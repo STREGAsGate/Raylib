@@ -37,7 +37,7 @@ var sources: [String] {
     var array: [String] = []
     
     // Raylib
-    let raylib = ["core.c", "models.c", "raudio.c", "shapes.c", "text.c", "textures.c", "utils.c"]
+    let raylib = ["rcore.c", "rmodels.c", "raudio.c", "rshapes.c", "rtext.c", "rtextures.c", "utils.c"]
     array.append(contentsOf: raylib.map({"UnmodifiedRaylibSrc/" + $0}))
     
     // GLFW Common
@@ -124,6 +124,7 @@ var exclude: [String] {
         "UnmodifiedRaylibSrc/external/glfw/src/win32_init.c",
         "UnmodifiedRaylibSrc/external/glfw/src/glfw_config.h.in",
         "UnmodifiedRaylibSrc/shell.html",
+        "UnmodifiedRaylibSrc/minshell.html",
         "UnmodifiedRaylibSrc/external/glfw/deps/getopt.c",
         "UnmodifiedRaylibSrc/raylib.rc.data",
         "UnmodifiedRaylibSrc/external/glfw/src/CMakeLists.txt",
@@ -185,6 +186,7 @@ var exclude: [String] {
         "UnmodifiedRaylibSrc/external/glfw/src/x11_init.c",
         "UnmodifiedRaylibSrc/external/glfw/src/null_joystick.c",
         "UnmodifiedRaylibSrc/shell.html",
+        "UnmodifiedRaylibSrc/minshell.html",
         "UnmodifiedRaylibSrc/external/glfw/src/null_init.c",
         "UnmodifiedRaylibSrc/external/glfw/src/cocoa_init.m",
         "UnmodifiedRaylibSrc/external/glfw/src/CMakeLists.txt",
@@ -236,6 +238,7 @@ var exclude: [String] {
         "UnmodifiedRaylibSrc/external/glfw/CMake/GenerateMappings.cmake",
         "UnmodifiedRaylibSrc/rglfw.c",
         "UnmodifiedRaylibSrc/shell.html",
+        "UnmodifiedRaylibSrc/minshell.html",
         "UnmodifiedRaylibSrc/external/glfw/src/cocoa_window.m",
         "UnmodifiedRaylibSrc/external/glfw/src/null_joystick.c",
         "UnmodifiedRaylibSrc/external/glfw/CMake/cmake_uninstall.cmake.in",

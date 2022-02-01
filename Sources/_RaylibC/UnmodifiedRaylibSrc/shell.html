@@ -4,28 +4,28 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     
-    <title>raylib HTML5 GAME</title>
+    <title>raylib web game</title>
     
-    <meta name="title" content="raylib HTML5 GAME">
-    <meta name="description" content="New HTML5 videogame, developed using raylib videogames library">
+    <meta name="title" content="raylib web game">
+    <meta name="description" content="New raylib web videogame, developed using raylib videogames library">
     <meta name="keywords" content="raylib, games, html5, programming, C, C++, library, learn, videogames">
     <meta name="viewport" content="width=device-width">
     
     <!-- Open Graph metatags for sharing -->
-    <meta property="og:title" content="raylib HTML5 GAME">
+    <meta property="og:title" content="raylib web game">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image" content="https://www.raylib.com/common/img/raylib_logo.png">
     <meta property="og:site_name" content="raylib.com">
     <meta property="og:url" content="https://www.raylib.com/games.html">
-    <meta property="og:description" content="New HTML5 videogame, developed using raylib videogames library">
+    <meta property="og:description" content="New raylib web videogame, developed using raylib videogames library">
 
     <!-- Twitter metatags for sharing -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@raysan5">
-    <meta name="twitter:title" content="raylib HTML5 GAME">
+    <meta name="twitter:title" content="raylib web game">
     <meta name="twitter:image" content="https://www.raylib.com/common/raylib_logo.png">
     <meta name="twitter:url" content="https://www.raylib.com/games.html">
-    <meta name="twitter:description" content="New HTML5 videogame, developed using raylib videogames library">
+    <meta name="twitter:description" content="New raylib web game, developed using raylib videogames library">
     
     <!-- Favicon -->
     <link rel="shortcut icon" href="https://www.raylib.com/favicon.ico">
@@ -76,7 +76,7 @@ jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaB
       canvas.emscripten { 
         border: 0px none; 
         background: black; 
-        width: 100% 
+        width: 100%;
       }
      
       .spinner { 
@@ -192,7 +192,8 @@ jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaB
     <script type='text/javascript'>
         function saveFileFromMEMFSToDisk(memoryFSname, localFSname)     // This can be called by C/C++ code
         {
-            var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            var isSafari = false; // Not supported, navigator.userAgent access is being restricted
+            //var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
             var data = FS.readFile(memoryFSname);
             var blob;
 
