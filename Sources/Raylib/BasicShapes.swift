@@ -183,7 +183,7 @@ public extension Raylib {
     
     /// Draw rectangle outline with extended parameters
     @_transparent
-    static func drawRectangleLinesEx(_ rec: Rectangle, _ lineThick: Int32, _ color: Color) {
+    static func drawRectangleLinesEx(_ rec: Rectangle, _ lineThick: Float, _ color: Color) {
         _RaylibC.DrawRectangleLinesEx(rec, lineThick, color)
     }
     
@@ -195,7 +195,7 @@ public extension Raylib {
     
     /// Draw rectangle with rounded edges outline
     @_transparent
-    static func drawRectangleRoundedLines(_ rec: Rectangle, _ roundness: Float, _ segments: Int32, _ lineThick: Int32, _ color: Color) {
+    static func drawRectangleRoundedLines(_ rec: Rectangle, _ roundness: Float, _ segments: Int32, _ lineThick: Float, _ color: Color) {
         _RaylibC.DrawRectangleRoundedLines(rec, roundness, segments, lineThick, color)
     }
     

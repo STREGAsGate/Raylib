@@ -60,7 +60,7 @@ public extension Raylib {
     
     /// Load font data for further use
     @_transparent
-    static func loadFontData(_ fileData: UnsafePointer<UInt8>!, _ dataSize: Int32, _ fontSize: Int32, _ fontChars: [Int32], _ type: FontType) -> [CharInfo] {
+    static func loadFontData(_ fileData: UnsafePointer<UInt8>!, _ dataSize: Int32, _ fontSize: Int32, _ fontChars: [Int32], _ type: FontType) -> [GlyphInfo] {
         var chars = fontChars
         return chars.withUnsafeMutableBufferPointer { charBytes in
             let v = _RaylibC.LoadFontData(fileData, dataSize, fontSize, charBytes.baseAddress, Int32(charBytes.count), type.rawValue)
@@ -70,13 +70,13 @@ public extension Raylib {
     
     /// Generate image font atlas using chars info
     @_transparent @available(*, unavailable, message: "The Swift implimentation is missing...")
-    static func genImageFontAtlas(_ chars: [CharInfo], _ recs: [Rectangle], _ fontSize: Int32, _ padding: Int32, _ packMethod: Int32) -> Image {
+    static func genImageFontAtlas(_ chars: [GlyphInfo], _ recs: [Rectangle], _ fontSize: Int32, _ padding: Int32, _ packMethod: Int32) -> Image {
         fatalError("Not implimented")
     }
     
     /// Unload font chars info data (RAM)
     @_transparent
-    static func unloadFontData(_ chars: [CharInfo]) {
+    static func unloadFontData(_ chars: [GlyphInfo]) {
         var chars = chars
         chars.withUnsafeMutableBufferPointer { bufferPointer in
             _RaylibC.UnloadFontData(bufferPointer.baseAddress, Int32(bufferPointer.count))
@@ -113,25 +113,11 @@ public extension Raylib {
         }
     }
     
-    /// Draw text using font inside rectangle limits
+    /// Draw text using Font and pro parameters (rotation)
     @_transparent
-    static func drawTextRec(_ font: Font, _ text: String, _ rec: Rectangle, _ fontSize: Float, _ spacing: Float, _ wordWrap: Bool, _ tint: Color) {
+    static func drawTextPro(_ font: Font, _ text: String, _ position: Vector2 , _ origin: Vector2, _ rotation: Float, _ fontSize: Float, _ spacing: Float, _ tint: Color) {
         text.withCString { cString in
-#if os(Windows)
-            let wordWrap: bool = bool(wordWrap ? 1 : 0)
-#endif
-            _RaylibC.DrawTextRec(font, cString, rec, fontSize, spacing, wordWrap, tint)
-        }
-    }
-    
-    /// Draw text using font inside rectangle limits with support for text selection
-    @_transparent
-    static func drawTextRecEx(_ font: Font, _ text: String, _ rec: Rectangle, _ fontSize: Float, _ spacing: Float, _ wordWrap: Bool, _ tint: Color, _ selectStart: Int32, _ selectLength: Int32, _ selectTint: Color, _ selectBackTint: Color) {
-        text.withCString { cString in
-#if os(Windows)
-            let wordWrap: bool = bool(wordWrap ? 1 : 0)
-#endif
-            _RaylibC.DrawTextRecEx(font, cString, rec, fontSize, spacing, wordWrap, tint, selectStart, selectLength, selectTint, selectBackTint)
+            _RaylibC.DrawTextPro(font, text, position, origin, rotation, fontSize, spacing, tint)
         }
     }
     
@@ -277,46 +263,46 @@ public extension Raylib {
         }
     }
     
-    /// Encode text codepoint into utf8 text (memory must be freed!)
-    @_transparent @available(*, deprecated, message: "Use `String.utf8` with `String.init(_ utf8: String.UTF8View)`.")
-    static func textToUtf8(_ codepoints: [Int32]) -> String {
-        var codepoints = codepoints
-        return codepoints.withUnsafeMutableBufferPointer { bufferPointer in
-            return String(cString: _RaylibC.TextToUtf8(bufferPointer.baseAddress, Int32(bufferPointer.count)))
-        }
-    }
-    
-    //MARK: - UTF8 text strings management functions
-    
-    /// Get all codepoints in a string, codepoints count returned by parameters
-    @_transparent @available(*, deprecated, message: "Use `String.unicodeScalars`.")
-    static func getCodepoints(_ text: String) -> [Int32] {
-        return text.withCString { cString in
-            var count: Int32 = Int32(text.count)
-            let start = _RaylibC.GetCodepoints(cString, &count)
-            return Array(UnsafeBufferPointer<Int32>(start: start, count: Int(count)))
-        }
-    }
-    
-    /// Get total number of characters (codepoints) in a UTF8 encoded string
-    @_transparent @available(*, deprecated, message: "Use `String.unicodeScalars.count`.")
-    static func getCodepointsCount(_ text: String) -> Int32 {
-        return text.withCString { cString in
-            return _RaylibC.GetCodepointsCount(cString)
-        }
-    }
-    
-    /// Returns next codepoint in a UTF8 encoded string; 0x3f('?') is returned on failure
-    @_transparent @available(*, deprecated, message: "Use `String.unicodeScalars.count`.")
-    static func getNextCodepoint(_ text: String, _ bytesProcessed: inout Int32) -> Int32 {
-        return text.withCString { cString in
-            return _RaylibC.GetNextCodepoint(cString, &bytesProcessed)
-        }
-    }
-    
-    /// Encode codepoint into utf8 text (char array length returned as parameter)
-    @_transparent @available(*, deprecated, message: "Use `String.utf8` with `String.init(_ utf8: String.UTF8View)`.")
-    static func codepointToUtf8(_ codepoint: Int32, _ byteLength: UnsafeMutablePointer<Int32>!) -> UnsafePointer<CChar>! {
-        return _RaylibC.CodepointToUtf8(codepoint, byteLength)
-    }
+//    /// Encode text codepoint into utf8 text (memory must be freed!)
+//    @_transparent @available(*, deprecated, message: "Use `String.utf8` with `String.init(_ utf8: String.UTF8View)`.")
+//    static func textToUtf8(_ codepoints: [Int32]) -> String {
+//        var codepoints = codepoints
+//        return codepoints.withUnsafeMutableBufferPointer { bufferPointer in
+//            return String(cString: _RaylibC.TextToUtf8(bufferPointer.baseAddress, Int32(bufferPointer.count)))
+//        }
+//    }
+//    
+//    //MARK: - UTF8 text strings management functions
+//    
+//    /// Get all codepoints in a string, codepoints count returned by parameters
+//    @_transparent @available(*, deprecated, message: "Use `String.unicodeScalars`.")
+//    static func getCodepoints(_ text: String) -> [Int32] {
+//        return text.withCString { cString in
+//            var count: Int32 = Int32(text.count)
+//            let start = _RaylibC.GetCodepoints(cString, &count)
+//            return Array(UnsafeBufferPointer<Int32>(start: start, count: Int(count)))
+//        }
+//    }
+//    
+//    /// Get total number of characters (codepoints) in a UTF8 encoded string
+//    @_transparent @available(*, deprecated, message: "Use `String.unicodeScalars.count`.")
+//    static func getCodepointsCount(_ text: String) -> Int32 {
+//        return text.withCString { cString in
+//            return _RaylibC.GetCodepointsCount(cString)
+//        }
+//    }
+//    
+//    /// Returns next codepoint in a UTF8 encoded string; 0x3f('?') is returned on failure
+//    @_transparent @available(*, deprecated, message: "Use `String.unicodeScalars.count`.")
+//    static func getNextCodepoint(_ text: String, _ bytesProcessed: inout Int32) -> Int32 {
+//        return text.withCString { cString in
+//            return _RaylibC.GetNextCodepoint(cString, &bytesProcessed)
+//        }
+//    }
+//    
+//    /// Encode codepoint into utf8 text (char array length returned as parameter)
+//    @_transparent @available(*, deprecated, message: "Use `String.utf8` with `String.init(_ utf8: String.UTF8View)`.")
+//    static func codepointToUtf8(_ codepoint: Int32, _ byteLength: UnsafeMutablePointer<Int32>!) -> UnsafePointer<CChar>! {
+//        return _RaylibC.CodepointToUtf8(codepoint, byteLength)
+//    }
 }

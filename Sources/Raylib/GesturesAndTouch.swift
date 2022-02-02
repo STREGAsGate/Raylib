@@ -36,13 +36,7 @@ public extension Raylib {
     static func getGestureDetected() -> Gestures {
         return Gestures(rawValue: _RaylibC.GetGestureDetected())
     }
-    
-    /// Get touch points count
-    @_transparent
-    static func getTouchPointsCount() -> Int32 {
-        return _RaylibC.GetTouchPointsCount()
-    }
-    
+        
     /// Get gesture hold time in milliseconds
     @_transparent
     static func getGestureHoldDuration() -> Float {

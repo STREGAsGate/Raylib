@@ -208,7 +208,7 @@ public extension Raylib {
     /// Load samples data from wave as a floats array
     @_transparent
     static func loadWaveSamples(_ wave: Wave) -> [Float] {
-        let buffer = UnsafeMutableBufferPointer(start: _RaylibC.LoadWaveSamples(wave), count: Int(wave.sampleCount))
+        let buffer = UnsafeMutableBufferPointer(start: _RaylibC.LoadWaveSamples(wave), count: Int(wave.frameCount))
         return Array(buffer)
     }
     
@@ -251,8 +251,8 @@ public extension Raylib {
     
     /// Check if music is playing
     @_transparent
-    static func isMusicPlaying(_ music: Music) -> Bool {
-        let result = _RaylibC.IsMusicPlaying(music)
+    static func isMusicStreamPlaying(_ music: Music) -> Bool {
+        let result = _RaylibC.IsMusicStreamPlaying(music)
 #if os(Windows)
         return result.rawValue != 0
 #else
@@ -310,10 +310,10 @@ public extension Raylib {
     
     //MARK: - AudioStream management functions
     
-    /// Init audio stream (to stream raw audio pcm data)
+    /// Load audio stream (to stream raw audio pcm data)
     @_transparent
-    static func initAudioStream(_ sampleRate: UInt32, _ sampleSize: UInt32, _ channels: UInt32) -> AudioStream {
-        return _RaylibC.InitAudioStream(sampleRate, sampleSize, channels)
+    static func loadAudioStream(_ sampleRate: UInt32, _ sampleSize: UInt32, _ channels: UInt32) -> AudioStream {
+        return _RaylibC.LoadAudioStream(sampleRate, sampleSize, channels)
     }
     
     /// Update audio stream buffers with data
@@ -324,8 +324,8 @@ public extension Raylib {
     
     /// Close audio stream and free memory
     @_transparent
-    static func closeAudioStream(_ stream: AudioStream) {
-        _RaylibC.CloseAudioStream(stream)
+    static func unloadAudioStream(_ stream: AudioStream) {
+        _RaylibC.UnloadAudioStream(stream)
     }
     
     /// Check if any audio stream buffers requires refill

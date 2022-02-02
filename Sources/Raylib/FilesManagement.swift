@@ -48,7 +48,7 @@ public extension Raylib {
     
     /// Unload file text data allocated by LoadFileText()
     @_transparent @available(*, unavailable, message: "Swift will handle unloading automatically.")
-    static func unloadFileText(_ text: UnsafeMutablePointer<UInt8>!) {
+    static func unloadFileText(_ text: UnsafeMutablePointer<Int8>!) {
         _RaylibC.UnloadFileText(text)
     }
     

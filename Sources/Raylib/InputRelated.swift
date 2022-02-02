@@ -94,18 +94,18 @@ public extension Raylib {
 #endif
     }
     
-    /// Check gamepad name (if available)
-    @_transparent
-    static func isGamepadName(_ gamepad: Int32, _ name: String) -> Bool {
-        return name.withCString { cString in
-            let result = _RaylibC.IsGamepadName(gamepad, cString)
-#if os(Windows)
-            return result.rawValue != 0
-#else
-            return result
-#endif
-        }
-    }
+//    /// Check gamepad name (if available)
+//    @_transparent
+//    static func isGamepadName(_ gamepad: Int32, _ name: String) -> Bool {
+//        return name.withCString { cString in
+//            let result = _RaylibC.IsGamepadName(gamepad, cString)
+//#if os(Windows)
+//            return result.rawValue != 0
+//#else
+//            return result
+//#endif
+//        }
+//    }
     
     /// Return gamepad internal name id
     @_transparent

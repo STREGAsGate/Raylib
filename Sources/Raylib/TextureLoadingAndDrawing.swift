@@ -117,13 +117,7 @@ public extension Raylib {
     static func genImageWhiteNoise(_ width: Int32, _ height: Int32, _ factor: Float) -> Image {
         return _RaylibC.GenImageWhiteNoise(width, height, factor)
     }
-    
-    /// Generate image: perlin noise
-    @_transparent
-    static func genImagePerlinNoise(_ width: Int32, _ height: Int32, _ offsetX: Int32, _ offsetY: Int32, _ scale: Float) -> Image {
-        return _RaylibC.GenImagePerlinNoise(width, height, offsetX, offsetY, scale)
-    }
-    
+        
     /// Generate image: cellular algorithm. Bigger tileSize means bigger cells
     @_transparent
     static func genImageCellular(_ width: Int32, _ height: Int32, _ tileSize: Int32) -> Image {
@@ -473,19 +467,7 @@ public extension Raylib {
     static func updateTextureRec(_ texture: Texture2D, _ rec: Rectangle, _ pixels: UnsafeRawPointer!) {
         _RaylibC.UpdateTextureRec(texture, rec, pixels)
     }
-    
-    /// Get pixel data from GPU texture and return an Image
-    @_transparent
-    static func getTextureData(_ texture: Texture2D) -> Image {
-        return _RaylibC.GetTextureData(texture)
-    }
-    
-    /// Get pixel data from screen buffer and return an Image (screenshot)
-    @_transparent
-    static func getScreenData() -> Image {
-        return _RaylibC.GetScreenData()
-    }
-    
+        
     //MARK: - Texture configuration functions
     
     /// Generate GPU mipmaps for a texture
@@ -616,7 +598,7 @@ public extension Raylib {
     
     /// Get Color structure from hexadecimal value
     @_transparent
-    static func getColor(_ hexValue: Int32) -> Color {
+    static func getColor(_ hexValue: UInt32) -> Color {
         return _RaylibC.GetColor(hexValue)
     }
     
