@@ -53,7 +53,7 @@ import _RaylibC
 @_exported import struct _RaylibC.NPatchInfo
 
 // Font character info
-@_exported import struct _RaylibC.CharInfo
+@_exported import struct _RaylibC.GlyphInfo
 
 // Font type, includes texture and charSet array data
 @_exported import struct _RaylibC.Font
@@ -97,8 +97,8 @@ import _RaylibC
 // Ray type (useful for raycast)
 @_exported import struct _RaylibC.Ray
 
-// Raycast hit information
-@_exported import struct _RaylibC.RayHitInfo
+// RayCollision, ray hit information
+@_exported import struct _RaylibC.RayCollision
 
 // Bounding box type
 @_exported import struct _RaylibC.BoundingBox

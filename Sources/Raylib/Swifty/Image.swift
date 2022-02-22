@@ -11,16 +11,16 @@ import _RaylibC
 public extension Image {
     @_transparent
     init(data: UnsafeMutableRawPointer!, width: Int32, height: Int32, mipmaps: Int32, format: PixelFormat) {
-        self.init(data: data, width: width, height: height, mipmaps: mipmaps, __format: format.rawValue)
+        self.init(data: data, width: width, height: height, mipmaps: mipmaps, format: format.rawValue)
     }
     
     @_transparent
-    var format: PixelFormat {
+    var pixelFormat: PixelFormat {
         get {
-            return PixelFormat(rawValue: __format)!
+            return PixelFormat(rawValue: format)!
         }
         set {
-            __format = newValue.rawValue
+            format = newValue.rawValue
         }
     }
 }
@@ -128,11 +128,6 @@ public extension Image {
         self = Raylib.genImageWhiteNoise(width, height, factor)
     }
     
-    /// Generate image: perlin noise
-    @_transparent
-    init(perlinNoiseScale scale: Float, width: Int32, height: Int32, offsetX: Int32, offsetY: Int32) {
-        self = Raylib.genImagePerlinNoise(width, height, offsetX, offsetY, scale)
-    }
     
     /// Generate image: cellular algorithm. Bigger tileSize means bigger cells
     @_transparent

@@ -10,15 +10,15 @@ import _RaylibC
 
 public extension NPatchInfo {
     init(source: Rectangle, left: Int32, top: Int32, right: Int32, bottom: Int32, layout: NPatchLayout) {
-        self.init(source: source, left: left, top: top, right: right, bottom: bottom, __layout: layout.rawValue)
+        self.init(source: source, left: left, top: top, right: right, bottom: bottom, layout: layout.rawValue)
     }
     
-    var layout: NPatchLayout {
+    var pathLayout: NPatchLayout {
         get {
-            return NPatchLayout(rawValue: __layout)!
+            return NPatchLayout(rawValue: layout)!
         }
         set {
-            __layout = newValue.rawValue
+            layout = newValue.rawValue
         }
     }
 }

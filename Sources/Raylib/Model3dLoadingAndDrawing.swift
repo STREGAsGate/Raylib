@@ -133,7 +133,7 @@ public extension Raylib {
     @_transparent
     static func loadModelAnimations(_ fileName: String) -> [ModelAnimation] {
         return fileName.withCString { cString in
-            var animsCount: Int32 = 0
+            var animsCount: UInt32 = 0
             let result = _RaylibC.LoadModelAnimations(cString, &animsCount)
             let buffer = UnsafeMutableBufferPointer(start: result, count: Int(animsCount))
             return Array(buffer)
@@ -237,20 +237,20 @@ public extension Raylib {
     
     /// Compute mesh bounding box limits
     @_transparent
-    static func meshBoundingBox(_ mesh: Mesh) -> BoundingBox {
-        return _RaylibC.MeshBoundingBox(mesh)
+    static func getMeshBoundingBox(_ mesh: Mesh) -> BoundingBox {
+        return _RaylibC.GetMeshBoundingBox(mesh)
     }
     
     /// Compute mesh tangents
     @_transparent
-    static func meshTangents(_ mesh: inout Mesh) {
-        _RaylibC.MeshTangents(&mesh)
+    static func genMeshTangents(_ mesh: inout Mesh) {
+        _RaylibC.GenMeshTangents(&mesh)
     }
     
     /// Compute mesh binormals
     @_transparent
-    static func meshBinormals(_ mesh: inout Mesh) {
-        _RaylibC.MeshBinormals(&mesh)
+    static func genMeshBinormals(_ mesh: inout Mesh) {
+        _RaylibC.GenMeshBinormals(&mesh)
     }
     
     //MARK: - Model drawing functions
@@ -293,8 +293,8 @@ public extension Raylib {
     
     /// Draw a billboard texture defined by source
     @_transparent
-    static func drawBillboardRec(_ camera: Camera, _ texture: Texture2D, _ source: Rectangle, _ center: Vector3, _ size: Float, _ tint: Color) {
-        _RaylibC.DrawBillboardRec(camera, texture, source, center, size, tint)
+    static func drawBillboardRec(_ camera: Camera, _ texture: Texture2D, _ source: Rectangle, _ position: Vector3, _ size: Vector2, _ tint: Color) {
+        _RaylibC.DrawBillboardRec(camera, texture, source, position, size, tint)
     }
     
     //MARK: - Collision detection functions
@@ -331,67 +331,40 @@ public extension Raylib {
         return result
 #endif
     }
-    
-    /// Detect collision between ray and sphere
+        
+    /// Get collision info between ray and sphere
     @_transparent
-    static func checkCollisionRaySphere(_ ray: Ray, _ center: Vector3, _ radius: Float) -> Bool {
-        let result = _RaylibC.CheckCollisionRaySphere(ray, center, radius)
-#if os(Windows)
-        return result.rawValue != 0
-#else
-        return result
-#endif
+    static func GetRayCollisionSphere(_ ray: Ray, _ center: Vector3, _ radius: Float) -> RayCollision {
+        return _RaylibC.GetRayCollisionSphere(ray, center, radius)
     }
     
-    /// Detect collision between ray and sphere, returns collision point
+    /// Get collision info between ray and box
     @_transparent
-    static func checkCollisionRaySphereEx(_ ray: Ray, _ center: Vector3, _ radius: Float) -> Vector3? {
-        var collisionPoint = Vector3()
-        let result = _RaylibC.CheckCollisionRaySphereEx(ray, center, radius, &collisionPoint)
-#if os(Windows)
-        if result.rawValue != 0 {
-            return collisionPoint
-        }
-#else
-        if result {
-            return collisionPoint
-        }
-#endif
-        return nil
-    }
-    
-    /// Detect collision between ray and box
-    @_transparent
-    static func checkCollisionRayBox(_ ray: Ray, _ box: BoundingBox) -> Bool {
-        let result = _RaylibC.CheckCollisionRayBox(ray, box)
-#if os(Windows)
-        return result.rawValue != 0
-#else
-        return result
-#endif
-    }
-    
-    /// Get collision info between ray and mesh
-    @_transparent
-    static func getCollisionRayMesh(_ ray: Ray, _ mesh: Mesh, _ transform: Matrix) -> RayHitInfo {
-        return _RaylibC.GetCollisionRayMesh(ray, mesh, transform)
+    static func getRayCollisionBox(_ ray: Ray, _ box: BoundingBox) -> RayCollision {
+        return _RaylibC.GetRayCollisionBox(ray, box)
     }
     
     /// Get collision info between ray and model
     @_transparent
-    static func getCollisionRayModel(_ ray: Ray, _ model: Model) -> RayHitInfo {
-        return _RaylibC.GetCollisionRayModel(ray, model)
+    static func getRayCollisionModel(_ ray: Ray, _ model: Model) -> RayCollision {
+        return _RaylibC.GetRayCollisionModel(ray, model)
+    }
+    
+    /// Get collision info between ray and mesh
+    @_transparent
+    static func getRayCollisionMesh(_ ray: Ray, _ mesh: Mesh, _ transform: Matrix) -> RayCollision {
+        return _RaylibC.GetRayCollisionMesh(ray, mesh, transform)
     }
     
     /// Get collision info between ray and triangle
     @_transparent
-    static func getCollisionRayTriangle(_ ray: Ray, _ p1: Vector3, _ p2: Vector3, _ p3: Vector3) -> RayHitInfo {
-        return _RaylibC.GetCollisionRayTriangle(ray, p1, p2, p3)
+    static func getRayCollisionTriangle(_ ray: Ray, _ p1: Vector3, _ p2: Vector3, _ p3: Vector3) -> RayCollision {
+        return _RaylibC.GetRayCollisionTriangle(ray, p1, p2, p3)
     }
     
-    /// Get collision info between ray and ground plane (Y-normal plane)
+    /// Get collision info between ray and quad
     @_transparent
-    static func getCollisionRayGround(_ ray: Ray, _ groundHeight: Float) -> RayHitInfo {
-        return _RaylibC.GetCollisionRayGround(ray, groundHeight)
+    static func getRayCollisionQuad(_ ray: Ray, _ p1: Vector3, _ p2: Vector3, _ p3: Vector3, _ p4: Vector3) -> RayCollision {
+        return _RaylibC.GetRayCollisionQuad(ray, p1, p2, p3, p4)
     }
 }
