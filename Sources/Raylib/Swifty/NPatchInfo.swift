@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -9,16 +9,12 @@
 import _RaylibC
 
 public extension NPatchInfo {
-    init(source: Rectangle, left: Int32, top: Int32, right: Int32, bottom: Int32, layout: NPatchLayout) {
-        self.init(source: source, left: left, top: top, right: right, bottom: bottom, layout: layout.rawValue)
-    }
-    
-    var pathLayout: NPatchLayout {
+    var layout: NPatchLayout {
         get {
-            return NPatchLayout(rawValue: layout)!
+            return NPatchLayout(rawValue: _layout)!
         }
         set {
-            layout = newValue.rawValue
+            _layout = newValue.rawValue
         }
     }
 }

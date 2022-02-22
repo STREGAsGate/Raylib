@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -8,40 +8,40 @@
 
 // Gamepad buttons
 public enum GamepadButton: Int32 {
-    
-    /// This is here just for error checking
-    case unknown = 0
-    
-    // This is normally a DPAD
+    /// Unknown button, just for error checking
+    case unknown
+    /// Gamepad left DPAD up button
     case leftFaceUp
+    /// Gamepad left DPAD right button
     case leftFaceRight
+    /// Gamepad left DPAD down button
     case leftFaceDown
+    /// Gamepad left DPAD left button
     case leftFaceLeft
-    
-    // This normally corresponds with PlayStation and Xbox controllers
-    // XBOX: [Y,X,A,B]
-    // PS3: [Triangle,Square,Cross,Circle]
-    // No support for 6 button controllers though..
+    /// Gamepad right button up (i.e. PS3: Triangle, Xbox: Y)
     case rightFaceUp
+    /// Gamepad right button right (i.e. PS3: Square, Xbox: X)
     case rightFaceRight
+    /// Gamepad right button down (i.e. PS3: Cross, Xbox: A)
     case rightFaceDown
+    /// Gamepad right button left (i.e. PS3: Circle, Xbox: B)
     case rightFaceLeft
-    
-    // Triggers
+    /// Gamepad top/back trigger left (first), it could be a trailing button
     case leftTrigger1
+    /// Gamepad top/back trigger left (second), it could be a trailing button
     case leftTrigger2
+    /// Gamepad top/back trigger right (one), it could be a trailing button
     case rightTrigger1
+    /// Gamepad top/back trigger right (second), it could be a trailing button
     case rightTrigger2
-    
-    // These are buttons in the center of the gamepad
-    /// PS3 Select
+    /// Gamepad center buttons, left one (i.e. PS3: Select)
     case middleLeft
-    /// PS Button/XBOX Button
+    /// Gamepad center buttons, middle one (i.e. PS3: PS, Xbox: XBOX)
     case middle
-    /// PS3 Start
+    /// Gamepad center buttons, right one (i.e. PS3: Start)
     case middleRight
-    
-    // These are the joystick press in buttons
+    /// Gamepad joystick pressed button left
     case leftThumb
+    /// Gamepad joystick pressed button right
     case rightThumb
 }

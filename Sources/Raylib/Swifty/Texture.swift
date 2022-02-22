@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -10,7 +10,7 @@ import _RaylibC
 
 public extension Texture {
     /// Load texture from image data
-    @_transparent
+    @inlinable
     init(image: Image) {
         self = Raylib.loadTextureFromImage(image)
     }
@@ -20,7 +20,7 @@ public extension Texture {
 import Foundation
 
 public extension Texture {
-    @_transparent
+    @inlinable
     init(url: URL) {
         self = Raylib.loadTexture(url.path)
     }

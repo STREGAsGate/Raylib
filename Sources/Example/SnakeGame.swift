@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -47,7 +47,7 @@ class SnakeGame {
     var snakeSegmentCount = 0
     var fruit: Food = Food()
     
-
+    
     func run() {
         //MARK: - Initialization
         Raylib.initWindow(screenWidth, screenHeight, "Classic Game: Snake")

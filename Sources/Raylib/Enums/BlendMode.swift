@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -9,7 +9,7 @@
 // Color blending modes (pre-defined)
 public enum BlendMode: Int32 {
     /// Blend textures considering alpha (default)
-    case alpha = 0
+    case alpha
     /// Blend textures adding colors
     case additive
     /// Blend textures multiplying colors
@@ -17,7 +17,9 @@ public enum BlendMode: Int32 {
     /// Blend textures adding colors (alternative)
     case addColors
     /// Blend textures subtracting colors (alternative)
-    case blendColors
-    /// Belnd textures using custom src/dst factors (use rlSetBlendMode())
+    case subtractColors
+    /// Blend premultiplied textures considering alpha
+    case alphaPreMultiplied
+    /// Blend textures using custom src/dst factors (use rlSetBlendMode())
     case custom
 }

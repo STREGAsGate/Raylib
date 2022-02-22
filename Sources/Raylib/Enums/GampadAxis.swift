@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -8,15 +8,16 @@
 
 // Gamepad axis
 public enum GamepadAxis: Int32 {
-    // Left stick
+    /// Gamepad left stick X axis
     case leftX  = 0
+    /// Gamepad left stick Y axis
     case leftY  = 1
-
-    // Right stick
+    /// Gamepad right stick X axis
     case rightX = 2
+    /// Gamepad right stick Y axis
     case rightY = 3
-
-    // Pressure levels for the back triggers
-    case leftTrigger = 4 // [1..-1] (pressure-level)
-    case rightTrigger = 5 // [1..-1] (pressure-level)
+    /// Gamepad back trigger left, pressure level: [1..-1]
+    case leftTrigger = 4
+    /// Gamepad back trigger right, pressure level: [1..-1]
+    case rightTrigger = 5
 }

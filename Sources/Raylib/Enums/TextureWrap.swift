@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -9,7 +9,7 @@
 // Texture parameters: wrap mode
 public enum TextureWrap: Int32 {
     /// Repeats texture in tiled mode
-    case `repeat` = 0
+    case `repeat`
     /// Clamps texture to edge pixel in tiled mode
     case clamp
     /// Mirrors and repeats the texture in tiled mode

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -8,6 +8,8 @@
 
 // Camera projection
 public enum CameraProjection: Int32 {
-    case perspective = 0
+    /// Perspective projection
+    case perspective
+    /// Orthographic projection
     case orthographic
 }

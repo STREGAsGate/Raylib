@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -11,7 +11,7 @@
 // NOTE 2: Filter is accordingly set for minification and magnification
 public enum TextureFilter: Int32 {
     /// No filter, just pixel aproximation
-    case point = 0
+    case point
     /// Linear filtering
     case bilinear
     /// Trilinear filtering (linear with mipmaps)

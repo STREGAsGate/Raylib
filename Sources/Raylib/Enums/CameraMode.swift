@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -8,9 +8,14 @@
 
 // Camera system modes
 public enum CameraMode: Int32 {
-    case custom = 0
+    /// Custom camera
+    case custom
+    /// Free camera
     case free
+    /// Orbital camera
     case orbital
+    /// First person camera
     case firstPerson
+    /// Third person camera
     case thridPerson
 }

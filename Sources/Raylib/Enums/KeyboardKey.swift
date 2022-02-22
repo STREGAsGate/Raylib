@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -123,11 +123,11 @@ public enum KeyboardKey: Int32 {
     case keypadEqual    = 336
     
     // Android key buttons
-//    case back           = 4
-//    case menu           = 82
-//    case volumeUp       = 24
-//    case volumeDown     = 25
-
+    var androidBack: RawValue {return 4}
+    var androidMenu: RawValue {return 82}
+    var androidVolumeUp: RawValue {return 24}
+    var androidVolumeDown: RawValue {return 25}
+    
     case unknown = -1
 }
 

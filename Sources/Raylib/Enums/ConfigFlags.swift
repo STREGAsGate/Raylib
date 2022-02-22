@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -37,7 +37,7 @@ public struct ConfigFlags: OptionSet, Equatable, RawRepresentable {
     /// Set to support HighDPI
     public static let windowHighDPI            = ConfigFlags(0x00002000)
     /// Set to try enabling MSAA 4X
-    public static let Fmsaa4xHint              = ConfigFlags(0x00000020)
+    public static let msaa4xHint               = ConfigFlags(0x00000020)
     /// Set to try enabling interlaced video format (for V3D)
     public static let interlacedHint           = ConfigFlags(0x00010000)
     

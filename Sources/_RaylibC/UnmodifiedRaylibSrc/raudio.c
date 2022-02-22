@@ -664,7 +664,7 @@ void SetAudioBufferPitch(AudioBuffer *buffer, float pitch)
 // Set pan for an audio buffer
 void SetAudioBufferPan(AudioBuffer *buffer, float pan)
 {
-    if (pan < 0.0f) pan = 0.0f; 
+    if (pan < 0.0f) pan = 0.0f;
     else if (pan > 1.0f) pan = 1.0f;
 
     if (buffer != NULL) buffer->pan = pan;
@@ -998,7 +998,7 @@ bool ExportWaveAsCode(Wave wave, const char *fileName)
     success = SaveFileText(fileName, txtData);
 
     RL_FREE(txtData);
-    
+
     if (success != 0) TRACELOG(LOG_INFO, "FILEIO: [%s] Wave as code exported successfully", fileName);
     else TRACELOG(LOG_WARNING, "FILEIO: [%s] Failed to export wave as code", fileName);
 
@@ -1407,7 +1407,7 @@ Music LoadMusicStream(const char *fileName)
 
 // Load music stream from memory buffer, fileType refers to extension: i.e. ".wav"
 // WARNING: File extension must be provided in lower-case
-Music LoadMusicStreamFromMemory(const char *fileType, unsigned char *data, int dataSize)
+Music LoadMusicStreamFromMemory(const char *fileType, const unsigned char *data, int dataSize)
 {
     Music music = { 0 };
     bool musicLoaded = false;

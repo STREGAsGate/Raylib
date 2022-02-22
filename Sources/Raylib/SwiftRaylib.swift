@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -129,7 +129,8 @@ import _RaylibC
 #endif
 
 public struct Raylib {
-    public var version: String {
-        return "3.7"
+    @inlinable
+    public static var raylibVersion: String {
+        return RAYLIB_VERSION
     }
 }

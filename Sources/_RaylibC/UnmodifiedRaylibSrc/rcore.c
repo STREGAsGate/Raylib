@@ -722,7 +722,7 @@ struct android_app *GetAndroidApp(void)
 void InitWindow(int width, int height, const char *title)
 {
     TRACELOG(LOG_INFO, "Initializing raylib %s", RAYLIB_VERSION);
-    
+
     TRACELOG(LOG_INFO, "Supported raylib modules:");
     TRACELOG(LOG_INFO, "    > rcore:..... loaded (mandatory)");
     TRACELOG(LOG_INFO, "    > rlgl:...... loaded (mandatory)");
@@ -731,12 +731,12 @@ void InitWindow(int width, int height, const char *title)
 #else
     TRACELOG(LOG_INFO, "    > rshapes:... not loaded (optional)");
 #endif
-#if defined(SUPPORT_MODULE_RTEXTURES) 
+#if defined(SUPPORT_MODULE_RTEXTURES)
     TRACELOG(LOG_INFO, "    > rtextures:. loaded (optional)");
 #else
     TRACELOG(LOG_INFO, "    > rtextures:. not loaded (optional)");
-#endif  
-#if defined(SUPPORT_MODULE_RTEXT) 
+#endif
+#if defined(SUPPORT_MODULE_RTEXT)
     TRACELOG(LOG_INFO, "    > rtext:..... loaded (optional)");
 #else
     TRACELOG(LOG_INFO, "    > rtext:..... not loaded (optional)");
@@ -746,7 +746,7 @@ void InitWindow(int width, int height, const char *title)
 #else
     TRACELOG(LOG_INFO, "    > rmodels:... not loaded (optional)");
 #endif
-#if defined(SUPPORT_MODULE_RAUDIO) 
+#if defined(SUPPORT_MODULE_RAUDIO)
     TRACELOG(LOG_INFO, "    > raudio:.... loaded (optional)");
 #else
     TRACELOG(LOG_INFO, "    > raudio:.... not loaded (optional)");
@@ -890,7 +890,7 @@ void InitWindow(int width, int height, const char *title)
     //emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 1, EmscriptenResizeCallback);
     // Trigger this once to get initial window sizing
     //EmscriptenResizeCallback(EMSCRIPTEN_EVENT_RESIZE, NULL, NULL);
-    
+
     // Support keyboard events -> Not used, GLFW.JS takes care of that
     //emscripten_set_keypress_callback("#canvas", NULL, 1, EmscriptenKeyboardCallback);
     //emscripten_set_keydown_callback("#canvas", NULL, 1, EmscriptenKeyboardCallback);
@@ -1276,7 +1276,7 @@ void ToggleFullscreen(void)
         int width, height;
         emscripten_get_canvas_element_size("#canvas", &width, &height);
         TRACELOG(LOG_WARNING, "Emscripten: Exit fullscreen: Canvas size: %i x %i", width, height);
-        
+
         CORE.Window.fullscreen = false;          // Toggle fullscreen flag
         CORE.Window.flags &= ~FLAG_FULLSCREEN_MODE;
     }
@@ -1903,9 +1903,11 @@ const char *GetClipboardText(void)
 {
 #if defined(PLATFORM_DESKTOP)
     return glfwGetClipboardString(CORE.Window.handle);
-#else
-    return NULL;
 #endif
+#if defined(PLATFORM_WEB)
+    return emscripten_run_script_string("navigator.clipboard.readText()");
+#endif
+    return NULL;
 }
 
 // Set clipboard text content
@@ -1913,6 +1915,9 @@ void SetClipboardText(const char *text)
 {
 #if defined(PLATFORM_DESKTOP)
     glfwSetClipboardString(CORE.Window.handle, text);
+#endif
+#if defined(PLATFORM_WEB)
+    emscripten_run_script(TextFormat("navigator.clipboard.writeText('%s')", text));
 #endif
 }
 
@@ -2750,7 +2755,7 @@ void TakeScreenshot(const char *fileName)
 
     char path[2048] = { 0 };
     strcpy(path, TextFormat("%s/%s", CORE.Storage.basePath, fileName));
-    
+
     ExportImage(image, path);           // WARNING: Module required: rtextures
     RL_FREE(imgData);
 
@@ -2798,7 +2803,7 @@ bool FileExists(const char *fileName)
 
     // NOTE: Alternatively, stat() can be used instead of access()
     //#include <sys/stat.h>
-    //struct stat statbuf;   
+    //struct stat statbuf;
     //if (stat(filename, &statbuf) == 0) result = true;
 
     return result;
@@ -2856,9 +2861,9 @@ bool DirectoryExists(const char *dirPath)
 int GetFileLength(const char *fileName)
 {
     int size = 0;
-    
+
     FILE *file = fopen(fileName, "rb");
-    
+
     if (file != NULL)
     {
         fseek(file, 0L, SEEK_END);
@@ -3093,7 +3098,7 @@ char **GetDirectoryFiles(const char *dirPath, int *fileCount)
     if (dir != NULL) // It's a directory
     {
         // Count files
-        while ((entity = readdir(dir)) != NULL) counter++; 
+        while ((entity = readdir(dir)) != NULL) counter++;
 
         dirFileCount = counter;
         *fileCount = dirFileCount;
@@ -3101,7 +3106,7 @@ char **GetDirectoryFiles(const char *dirPath, int *fileCount)
         // Memory allocation for dirFileCount
         dirFilesPath = (char **)RL_MALLOC(dirFileCount*sizeof(char *));
         for (int i = 0; i < dirFileCount; i++) dirFilesPath[i] = (char *)RL_MALLOC(MAX_FILEPATH_LENGTH*sizeof(char));
-        
+
         // Reset our position in the directory to the beginning
         rewinddir(dir);
 
@@ -3181,7 +3186,7 @@ long GetFileModTime(const char *fileName)
 }
 
 // Compress data (DEFLATE algorythm)
-unsigned char *CompressData(unsigned char *data, int dataLength, int *compDataLength)
+unsigned char *CompressData(const unsigned char *data, int dataLength, int *compDataLength)
 {
     #define COMPRESSION_QUALITY_DEFLATE  8
 
@@ -3201,7 +3206,7 @@ unsigned char *CompressData(unsigned char *data, int dataLength, int *compDataLe
 }
 
 // Decompress data (DEFLATE algorythm)
-unsigned char *DecompressData(unsigned char *compData, int compDataLength, int *dataLength)
+unsigned char *DecompressData(const unsigned char *compData, int compDataLength, int *dataLength)
 {
     unsigned char *data = NULL;
 
@@ -3259,7 +3264,7 @@ char *EncodeDataBase64(const unsigned char *data, int dataLength, int *outputLen
 }
 
 // Decode Base64 string data
-unsigned char *DecodeDataBase64(unsigned char *data, int *outputLength)
+unsigned char *DecodeDataBase64(const unsigned char *data, int *outputLength)
 {
     static const unsigned char base64decodeTable[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -4162,7 +4167,7 @@ static bool InitGraphicsDevice(int width, int height)
         glfwSwapInterval(1);
         TRACELOG(LOG_INFO, "DISPLAY: Trying to enable VSYNC");
     }
-    
+
     int fbWidth = CORE.Window.screen.width;
     int fbHeight = CORE.Window.screen.height;
 
@@ -4187,7 +4192,7 @@ static bool InitGraphicsDevice(int width, int height)
     CORE.Window.render.height = fbHeight;
     CORE.Window.currentFbo.width = fbWidth;
     CORE.Window.currentFbo.height = fbHeight;
-    
+
     TRACELOG(LOG_INFO, "DISPLAY: Device initialized successfully");
     TRACELOG(LOG_INFO, "    > Display size: %i x %i", CORE.Window.display.width, CORE.Window.display.height);
     TRACELOG(LOG_INFO, "    > Screen size:  %i x %i", CORE.Window.screen.width, CORE.Window.screen.height);
@@ -4601,7 +4606,7 @@ static bool InitGraphicsDevice(int width, int height)
         CORE.Window.render.height = CORE.Window.screen.height;
         CORE.Window.currentFbo.width = CORE.Window.render.width;
         CORE.Window.currentFbo.height = CORE.Window.render.height;
-        
+
         TRACELOG(LOG_INFO, "DISPLAY: Device initialized successfully");
         TRACELOG(LOG_INFO, "    > Display size: %i x %i", CORE.Window.display.width, CORE.Window.display.height);
         TRACELOG(LOG_INFO, "    > Screen size:  %i x %i", CORE.Window.screen.width, CORE.Window.screen.height);
@@ -4940,7 +4945,7 @@ void PollInputEvents(void)
 
     // Register previous touch states
     for (int i = 0; i < MAX_TOUCH_POINTS; i++) CORE.Input.Touch.previousTouchState[i] = CORE.Input.Touch.currentTouchState[i];
-    
+
     // Reset touch positions
     // TODO: It resets on PLATFORM_WEB the mouse position and not filled again until a move-event,
     // so, if mouse is not moved it returns a (0, 0) position... this behaviour should be reviewed!
@@ -5224,7 +5229,7 @@ static void KeyCallback(GLFWwindow *window, int key, int scancode, int action, i
         CORE.Input.Keyboard.keyPressedQueue[CORE.Input.Keyboard.keyPressedQueueCount] = key;
         CORE.Input.Keyboard.keyPressedQueueCount++;
     }
-    
+
     // Check the exit key to set close window
     if ((key == CORE.Input.Keyboard.exitKey) && (action == GLFW_PRESS)) glfwSetWindowShouldClose(CORE.Window.handle, GLFW_TRUE);
 
@@ -6580,7 +6585,7 @@ static int FindNearestConnectorMode(const drmModeConnector *connector, uint widt
         TRACELOG(LOG_TRACE, "DISPLAY: DRM mode: %d %ux%u@%u %s", i, mode->hdisplay, mode->vdisplay, mode->vrefresh,
             (mode->flags & DRM_MODE_FLAG_INTERLACE) ? "interlaced" : "progressive");
 
-        if ((mode->hdisplay < width) || (mode->vdisplay < height) | (mode->vrefresh < fps))
+        if ((mode->hdisplay < width) || (mode->vdisplay < height) || (mode->vrefresh < fps))
         {
             TRACELOG(LOG_TRACE, "DISPLAY: DRM mode is too small");
             continue;

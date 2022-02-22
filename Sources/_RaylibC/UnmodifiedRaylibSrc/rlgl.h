@@ -433,6 +433,7 @@ typedef enum {
     RL_BLEND_MULTIPLIED,               // Blend textures multiplying colors
     RL_BLEND_ADD_COLORS,               // Blend textures adding colors (alternative)
     RL_BLEND_SUBTRACT_COLORS,          // Blend textures subtracting colors (alternative)
+    RL_BLEND_ALPHA_PREMUL,             // Blend premultiplied textures considering alpha
     RL_BLEND_CUSTOM                    // Blend textures using custom src/dst factors (use rlSetBlendFactors())
 } rlBlendMode;
 
@@ -619,23 +620,24 @@ RLAPI void rlSetTexture(unsigned int id);           // Set current texture for r
 
 // Vertex buffers management
 RLAPI unsigned int rlLoadVertexArray(void);                               // Load vertex array (vao) if supported
-RLAPI unsigned int rlLoadVertexBuffer(void *buffer, int size, bool dynamic);            // Load a vertex buffer attribute
-RLAPI unsigned int rlLoadVertexBufferElement(void *buffer, int size, bool dynamic);     // Load a new attributes element buffer
-RLAPI void rlUpdateVertexBuffer(unsigned int bufferId, void *data, int dataSize, int offset);    // Update GPU buffer with new data
+RLAPI unsigned int rlLoadVertexBuffer(const void *buffer, int size, bool dynamic);            // Load a vertex buffer attribute
+RLAPI unsigned int rlLoadVertexBufferElement(const void *buffer, int size, bool dynamic);     // Load a new attributes element buffer
+RLAPI void rlUpdateVertexBuffer(unsigned int bufferId, const void *data, int dataSize, int offset);     // Update GPU buffer with new data
+RLAPI void rlUpdateVertexBufferElements(unsigned int id, const void *data, int dataSize, int offset);   // Update vertex buffer elements with new data
 RLAPI void rlUnloadVertexArray(unsigned int vaoId);
 RLAPI void rlUnloadVertexBuffer(unsigned int vboId);
-RLAPI void rlSetVertexAttribute(unsigned int index, int compSize, int type, bool normalized, int stride, void *pointer);
+RLAPI void rlSetVertexAttribute(unsigned int index, int compSize, int type, bool normalized, int stride, const void *pointer);
 RLAPI void rlSetVertexAttributeDivisor(unsigned int index, int divisor);
 RLAPI void rlSetVertexAttributeDefault(int locIndex, const void *value, int attribType, int count); // Set vertex attribute default value
 RLAPI void rlDrawVertexArray(int offset, int count);
-RLAPI void rlDrawVertexArrayElements(int offset, int count, void *buffer);
+RLAPI void rlDrawVertexArrayElements(int offset, int count, const void *buffer);
 RLAPI void rlDrawVertexArrayInstanced(int offset, int count, int instances);
-RLAPI void rlDrawVertexArrayElementsInstanced(int offset, int count, void *buffer, int instances);
+RLAPI void rlDrawVertexArrayElementsInstanced(int offset, int count, const void *buffer, int instances);
 
 // Textures management
-RLAPI unsigned int rlLoadTexture(void *data, int width, int height, int format, int mipmapCount); // Load texture in GPU
+RLAPI unsigned int rlLoadTexture(const void *data, int width, int height, int format, int mipmapCount); // Load texture in GPU
 RLAPI unsigned int rlLoadTextureDepth(int width, int height, bool useRenderBuffer);               // Load depth texture/renderbuffer (to be attached to fbo)
-RLAPI unsigned int rlLoadTextureCubemap(void *data, int size, int format);                        // Load texture cubemap
+RLAPI unsigned int rlLoadTextureCubemap(const void *data, int size, int format);                        // Load texture cubemap
 RLAPI void rlUpdateTexture(unsigned int id, int offsetX, int offsetY, int width, int height, int format, const void *data);  // Update GPU texture with new data
 RLAPI void rlGetGlTextureFormats(int format, int *glInternalFormat, int *glFormat, int *glType);  // Get OpenGL internal formats
 RLAPI const char *rlGetPixelFormatName(unsigned int format);              // Get name string for pixel format
@@ -1778,10 +1780,11 @@ void rlSetBlendMode(int mode)
             case RL_BLEND_MULTIPLIED: glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA); glBlendEquation(GL_FUNC_ADD); break;
             case RL_BLEND_ADD_COLORS: glBlendFunc(GL_ONE, GL_ONE); glBlendEquation(GL_FUNC_ADD); break;
             case RL_BLEND_SUBTRACT_COLORS: glBlendFunc(GL_ONE, GL_ONE); glBlendEquation(GL_FUNC_SUBTRACT); break;
-            case RL_BLEND_CUSTOM: 
+            case RL_BLEND_ALPHA_PREMUL: glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); glBlendEquation(GL_FUNC_ADD); break;
+            case RL_BLEND_CUSTOM:
             {
                 // NOTE: Using GL blend src/dst factors and GL equation configured with rlSetBlendFactors()
-                glBlendFunc(RLGL.State.glBlendSrcFactor, RLGL.State.glBlendDstFactor); glBlendEquation(RLGL.State.glBlendEquation); 
+                glBlendFunc(RLGL.State.glBlendSrcFactor, RLGL.State.glBlendDstFactor); glBlendEquation(RLGL.State.glBlendEquation);
             } break;
             default: break;
         }
@@ -2680,7 +2683,7 @@ bool rlCheckRenderBatchLimit(int vCount)
 // Textures data management
 //-----------------------------------------------------------------------------------------
 // Convert image data to OpenGL texture (returns OpenGL valid Id)
-unsigned int rlLoadTexture(void *data, int width, int height, int format, int mipmapCount)
+unsigned int rlLoadTexture(const void *data, int width, int height, int format, int mipmapCount)
 {
     glBindTexture(GL_TEXTURE_2D, 0);    // Free any old binding
 
@@ -2882,7 +2885,7 @@ unsigned int rlLoadTextureDepth(int width, int height, bool useRenderBuffer)
 // Load texture cubemap
 // NOTE: Cubemap data is expected to be 6 images in a single data array (one after the other),
 // expected the following convention: +X, -X, +Y, -Y, +Z, -Z
-unsigned int rlLoadTextureCubemap(void *data, int size, int format)
+unsigned int rlLoadTextureCubemap(const void *data, int size, int format)
 {
     unsigned int id = 0;
 
@@ -3317,7 +3320,7 @@ void rlUnloadFramebuffer(unsigned int id)
 // Vertex data management
 //-----------------------------------------------------------------------------------------
 // Load a new attributes buffer
-unsigned int rlLoadVertexBuffer(void *buffer, int size, bool dynamic)
+unsigned int rlLoadVertexBuffer(const void *buffer, int size, bool dynamic)
 {
     unsigned int id = 0;
 
@@ -3331,7 +3334,7 @@ unsigned int rlLoadVertexBuffer(void *buffer, int size, bool dynamic)
 }
 
 // Load a new attributes element buffer
-unsigned int rlLoadVertexBufferElement(void *buffer, int size, bool dynamic)
+unsigned int rlLoadVertexBufferElement(const void *buffer, int size, bool dynamic)
 {
     unsigned int id = 0;
 
@@ -3378,7 +3381,7 @@ void rlDisableVertexBufferElement(void)
 
 // Update vertex buffer with new data
 // NOTE: dataSize and offset must be provided in bytes
-void rlUpdateVertexBuffer(unsigned int id, void *data, int dataSize, int offset)
+void rlUpdateVertexBuffer(unsigned int id, const void *data, int dataSize, int offset)
 {
 #if defined(GRAPHICS_API_OPENGL_33) || defined(GRAPHICS_API_OPENGL_ES2)
     glBindBuffer(GL_ARRAY_BUFFER, id);
@@ -3388,7 +3391,7 @@ void rlUpdateVertexBuffer(unsigned int id, void *data, int dataSize, int offset)
 
 // Update vertex buffer elements with new data
 // NOTE: dataSize and offset must be provided in bytes
-void rlUpdateVertexBufferElements(unsigned int id, void *data, int dataSize, int offset)
+void rlUpdateVertexBufferElements(unsigned int id, const void *data, int dataSize, int offset)
 {
 #if defined(GRAPHICS_API_OPENGL_33) || defined(GRAPHICS_API_OPENGL_ES2)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
@@ -3441,9 +3444,9 @@ void rlDrawVertexArray(int offset, int count)
 }
 
 // Draw vertex array elements
-void rlDrawVertexArrayElements(int offset, int count, void *buffer)
+void rlDrawVertexArrayElements(int offset, int count, const void *buffer)
 {
-    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (unsigned short *)buffer + offset);
+    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const unsigned short *)buffer + offset);
 }
 
 // Draw vertex array instanced
@@ -3455,10 +3458,10 @@ void rlDrawVertexArrayInstanced(int offset, int count, int instances)
 }
 
 // Draw vertex array elements instanced
-void rlDrawVertexArrayElementsInstanced(int offset, int count, void *buffer, int instances)
+void rlDrawVertexArrayElementsInstanced(int offset, int count, const void *buffer, int instances)
 {
 #if defined(GRAPHICS_API_OPENGL_33) || defined(GRAPHICS_API_OPENGL_ES2)
-    glDrawElementsInstanced(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (unsigned short *)buffer + offset, instances);
+    glDrawElementsInstanced(GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const unsigned short *)buffer + offset, instances);
 #endif
 }
 
@@ -3499,7 +3502,7 @@ unsigned int rlLoadVertexArray(void)
 }
 
 // Set vertex attribute
-void rlSetVertexAttribute(unsigned int index, int compSize, int type, bool normalized, int stride, void *pointer)
+void rlSetVertexAttribute(unsigned int index, int compSize, int type, bool normalized, int stride, const void *pointer)
 {
 #if defined(GRAPHICS_API_OPENGL_33) || defined(GRAPHICS_API_OPENGL_ES2)
     glVertexAttribPointer(index, compSize, type, normalized, stride, pointer);
@@ -3911,7 +3914,7 @@ void rlComputeShaderDispatch(unsigned int groupX, unsigned int groupY, unsigned 
 unsigned int rlLoadShaderBuffer(unsigned long long size, const void *data, int usageHint)
 {
     unsigned int ssbo = 0;
-    
+
 #if defined(GRAPHICS_API_OPENGL_43)
     glGenBuffers(1, &ssbo);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
@@ -3944,7 +3947,7 @@ void rlUpdateShaderBufferElements(unsigned int id, const void *data, unsigned lo
 unsigned long long rlGetShaderBufferSize(unsigned int id)
 {
     long long size = 0;
-    
+
 #if defined(GRAPHICS_API_OPENGL_43)
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, id);
     glGetInteger64v(GL_SHADER_STORAGE_BUFFER_SIZE, &size);

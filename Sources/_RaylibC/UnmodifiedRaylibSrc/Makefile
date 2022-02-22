@@ -42,7 +42,7 @@
 # Define required environment variables
 #------------------------------------------------------------------------------------------------
 # Define target platform: PLATFORM_DESKTOP, PLATFORM_RPI, PLATFORM_DRM, PLATFORM_ANDROID, PLATFORM_WEB
-PLATFORM           ?= PLATFORM_DESKTOP
+PLATFORM             ?= PLATFORM_DESKTOP
 
 # Define required raylib variables
 RAYLIB_VERSION        = 4.0.0
@@ -106,6 +106,7 @@ ROOT = $(shell whoami)
 
 # By default we suppose we are working on Windows
 HOST_PLATFORM_OS ?= WINDOWS
+PLATFORM_OS ?= WINDOWS
 
 # Determine PLATFORM_OS in case PLATFORM_DESKTOP selected
 ifeq ($(PLATFORM),PLATFORM_DESKTOP)
@@ -113,6 +114,9 @@ ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     # ifeq ($(UNAME),Msys) -> Windows
     ifeq ($(OS),Windows_NT)
         PLATFORM_OS = WINDOWS
+        ifndef PLATFORM_SHELL
+            PLATFORM_SHELL = cmd
+        endif
     else
         UNAMEOS = $(shell uname)
         ifeq ($(UNAMEOS),Linux)
@@ -133,6 +137,9 @@ ifeq ($(PLATFORM),PLATFORM_DESKTOP)
         ifeq ($(UNAMEOS),Darwin)
             PLATFORM_OS = OSX
         endif
+        ifndef PLATFORM_SHELL
+            PLATFORM_SHELL = sh
+        endif
     endif
 endif
 ifeq ($(PLATFORM),PLATFORM_RPI)
@@ -140,11 +147,33 @@ ifeq ($(PLATFORM),PLATFORM_RPI)
     ifeq ($(UNAMEOS),Linux)
         PLATFORM_OS = LINUX
     endif
+    ifndef PLATFORM_SHELL
+        PLATFORM_SHELL = sh
+    endif
 endif
 ifeq ($(PLATFORM),PLATFORM_DRM)
     UNAMEOS = $(shell uname)
     ifeq ($(UNAMEOS),Linux)
         PLATFORM_OS = LINUX
+    endif
+    ifndef PLATFORM_SHELL
+        PLATFORM_SHELL = sh
+    endif
+endif
+ifeq ($(PLATFORM),PLATFORM_WEB)
+    ifeq ($(OS),Windows_NT)
+        PLATFORM_OS = WINDOWS
+        ifndef PLATFORM_SHELL
+            PLATFORM_SHELL = cmd
+        endif
+    else
+        UNAMEOS = $(shell uname)
+        ifeq ($(UNAMEOS),Linux)
+            PLATFORM_OS = LINUX
+        endif
+        ifndef PLATFORM_SHELL
+            PLATFORM_SHELL = sh
+        endif
     endif
 endif
 
@@ -268,7 +297,7 @@ endif
 #------------------------------------------------------------------------------------------------
 #  -O1                      defines optimization level
 #  -g                       include debug information on compilation
-#  -s                       strip unnecessary data from build
+#  -s                       strip unnecessary data from build --> linker
 #  -Wall                    turns on most, but not all, compiler warnings
 #  -std=c99                 defines C language mode (standard C from 1999 revision)
 #  -std=gnu99               defines C language mode (GNU C from 1999 revision)
@@ -302,7 +331,7 @@ ifeq ($(RAYLIB_BUILD_MODE),RELEASE)
         CFLAGS += -Os
     endif
     ifeq ($(PLATFORM),PLATFORM_DESKTOP)
-        CFLAGS += -s -O1
+        CFLAGS += -O1
     endif
     ifeq ($(PLATFORM),PLATFORM_ANDROID)
         CFLAGS += -O2
@@ -728,18 +757,23 @@ else
 	@echo "Error: Root permissions needed for uninstallation. Try sudo make uninstall"
 endif
 
+.PHONY: clean_shell_cmd clean_shell_sh
+
 # Clean everything
-clean:
-ifeq ($(PLATFORM_OS),WINDOWS)
-	del *.o /s
-	cd $(RAYLIB_RELEASE_PATH)
-	del lib$(RAYLIB_LIB_NAME).a /s
-	del lib$(RAYLIB_LIB_NAME)dll.a /s
-	del $(RAYLIB_LIB_NAME).dll /s
-else
-	rm -fv *.o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).bc $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).so*
-endif
-ifeq ($(PLATFORM),PLATFORM_ANDROID)
-	rm -rf $(ANDROID_TOOLCHAIN) $(NATIVE_APP_GLUE)/android_native_app_glue.o
-endif
+clean:	clean_shell_$(PLATFORM_SHELL)
 	@echo "removed all generated files!"
+
+clean_shell_sh:
+	rm -fv *.o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).bc $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).so*
+ifeq ($(PLATFORM),PLATFORM_ANDROID)
+	rm -fv $(NATIVE_APP_GLUE)/android_native_app_glue.o
+endif
+
+# Set specific target variable
+clean_shell_cmd: SHELL=cmd
+clean_shell_cmd:
+	del *.o /s
+	cd $(RAYLIB_RELEASE_PATH) & \
+	del lib$(RAYLIB_LIB_NAME).a /s & \
+	del lib$(RAYLIB_LIB_NAME)dll.a /s & \
+	del $(RAYLIB_LIB_NAME).dll /s

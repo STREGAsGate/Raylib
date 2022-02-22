@@ -5,27 +5,23 @@ import PackageDescription
 
 var cSettings: [CSetting] {
     var array: [CSetting] = []
-    
-#if os(macOS)
-    array.append(.define("HOST_PLATFORM_OS", to: "OSX"))
-#elseif os(Windows)
-    array.append(.define("HOST_PLATFORM_OS", to: "WINDOWS"))
-#elseif os(Linux)
-    array.append(.define("HOST_PLATFORM_OS", to: "LINUX"))
-#endif
-    
+        
     array.append(.define("PLATFORM_DESKTOP", .when(platforms: [.macOS, .windows, .linux])))
     array.append(.define("SUPPORT_DEFAULT_FONT"))
     
     // Windows
+    array.append(.define("HOST_PLATFORM_OS", to: "WINDOWS", .when(platforms: [.windows])))
     array.append(.define("_GLFW_WIN32", .when(platforms: [.windows])))
     
     // Linux
+    array.append(.define("HOST_PLATFORM_OS", to: "LINUX", .when(platforms: [.linux])))
     array.append(.define("_GLFW_X11", .when(platforms: [.linux])))
     
     // macOS
+    array.append(.define("HOST_PLATFORM_OS", to: "OSX", .when(platforms: [.macOS])))
     array.append(.define("_GLFW_COCOA", .when(platforms: [.macOS])))
     array.append(.unsafeFlags(["-x", "objective-c", "-fno-objc-arc"], .when(platforms: [.macOS])))
+    
     
     array.append(.headerSearchPath("UnmodifiedRaylibSrc/external/glfw/include"))
     array.append(.headerSearchPath("UnmodifiedRaylibSrc"))
@@ -132,6 +128,8 @@ var exclude: [String] {
         "UnmodifiedRaylibSrc/external/glfw/src/wl_init.c",
         "UnmodifiedRaylibSrc/external/glfw/deps/glad_vulkan.c",
         "UnmodifiedRaylibSrc/external/glfw/src/glx_context.c",
+        "UnmodifiedRaylibSrc/build.zig",
+        "UnmodifiedRaylibSrc/minshell.html",
     ]
 }
 #endif
@@ -194,7 +192,9 @@ var exclude: [String] {
         "UnmodifiedRaylibSrc/external/glfw/deps/getopt.c",
         "UnmodifiedRaylibSrc/external/glfw/deps/glad_gl.c",
         "UnmodifiedRaylibSrc/raylib.ico",
-        "UnmodifiedRaylibSrc/external/glfw/CMake/GenerateMappings.cmake"
+        "UnmodifiedRaylibSrc/external/glfw/CMake/GenerateMappings.cmake",
+        "UnmodifiedRaylibSrc/build.zig",
+        "UnmodifiedRaylibSrc/minshell.html",
     ]
 }
 #endif
@@ -256,7 +256,9 @@ var exclude: [String] {
         "UnmodifiedRaylibSrc/external/glfw/deps/glad_gl.c",
         "UnmodifiedRaylibSrc/external/glfw/src/glfw_config.h.in",
         "UnmodifiedRaylibSrc/external/glfw/CMake/modules/FindOSMesa.cmake",
-        "UnmodifiedRaylibSrc/external/glfw/src/wgl_context.c"
+        "UnmodifiedRaylibSrc/external/glfw/src/wgl_context.c",
+        "UnmodifiedRaylibSrc/build.zig",
+        "UnmodifiedRaylibSrc/minshell.html",
     ]
 }
 #endif

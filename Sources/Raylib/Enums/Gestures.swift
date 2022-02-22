@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -12,7 +12,6 @@ public struct Gestures: OptionSet, Equatable, RawRepresentable {
     public let rawValue: Int32
     
     public static let none          = Gestures(0)
-   
     public static let tap           = Gestures(1)
     public static let doubletap     = Gestures(2)
     public static let hold          = Gestures(4)
@@ -31,6 +30,3 @@ public struct Gestures: OptionSet, Equatable, RawRepresentable {
         self.rawValue = rawValue
     }
 }
-
-
-

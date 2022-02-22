@@ -189,7 +189,7 @@ RMAPI float Normalize(float value, float start, float end)
 // Remap input value within input range to output range
 RMAPI float Remap(float value, float inputStart, float inputEnd, float outputStart, float outputEnd)
 {
-    float result =(value - inputStart)/(inputEnd - inputStart)*(outputEnd - outputStart) + outputStart;
+    float result = (value - inputStart)/(inputEnd - inputStart)*(outputEnd - outputStart) + outputStart;
 
     return result;
 }
@@ -337,16 +337,16 @@ RMAPI Vector2 Vector2Normalize(Vector2 v)
 // Transforms a Vector2 by a given Matrix
 RMAPI Vector2 Vector2Transform(Vector2 v, Matrix mat)
 {
-	Vector2 result = { 0 };
+    Vector2 result = { 0 };
 
-	float x = v.x;
-	float y = v.y;
-	float z = 0;
+    float x = v.x;
+    float y = v.y;
+    float z = 0;
 
-	result.x = mat.m0*x + mat.m4*y + mat.m8*z + mat.m12;
-	result.y = mat.m1*x + mat.m5*y + mat.m9*z + mat.m13;
+    result.x = mat.m0*x + mat.m4*y + mat.m8*z + mat.m12;
+    result.y = mat.m1*x + mat.m5*y + mat.m9*z + mat.m13;
 
-	return result;
+    return result;
 }
 
 // Calculate linear interpolation between two vectors
@@ -378,8 +378,11 @@ RMAPI Vector2 Vector2Rotate(Vector2 v, float angle)
 {
     Vector2 result = { 0 };
 
-    result.x = v.x*cosf(angle) - v.y*sinf(angle);
-    result.y = v.x*sinf(angle) + v.y*cosf(angle);
+    float cosres = cosf(angle);
+    float sinres = sinf(angle);
+
+    result.x = v.x*cosres - v.y*sinres;
+    result.y = v.x*sinres + v.y*cosres;
 
     return result;
 }

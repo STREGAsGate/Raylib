@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Dustin Collins (Strega's Gate)
+ * Copyright (c) 2022 Dustin Collins (Strega's Gate)
  * All Rights Reserved.
  * Licensed under MIT License
  *
@@ -8,27 +8,25 @@
 
 import _RaylibC
 
+//------------------------------------------------------------------------------------
+// Audio Loading and Playing Functions (Module: audio)
+//------------------------------------------------------------------------------------
+//MARK: - Audio device management functions
 public extension Raylib {
-    //------------------------------------------------------------------------------------
-    // Audio Loading and Playing Functions (Module: audio)
-    //------------------------------------------------------------------------------------
-    
-    //MARK: - Audio device management functions
-    
     /// Initialize audio device and context
-    @_transparent
+    @inlinable
     static func initAudioDevice() {
         _RaylibC.InitAudioDevice()
     }
     
     /// Close the audio device and context
-    @_transparent
+    @inlinable
     static func closeAudioDevice() {
         _RaylibC.CloseAudioDevice()
     }
     
     /// Check if audio device has been initialized successfully
-    @_transparent
+    @inlinable
     static var isAudioDeviceReady: Bool {
         let result = _RaylibC.IsAudioDeviceReady()
 #if os(Windows)
@@ -39,15 +37,17 @@ public extension Raylib {
     }
     
     /// Set master volume (listener)
-    @_transparent
+    @inlinable
     static func setMasterVolume(_ volume: Float) {
         _RaylibC.SetMasterVolume(volume)
     }
-    
-    //MARK: - Wave/Sound loading/unloading functions
-    
+}
+
+
+//MARK: - Wave/Sound loading/unloading functions
+public extension Raylib {
     /// Load wave data from file
-    @_transparent
+    @inlinable
     static func loadWave(_ fileName: String) -> Wave {
         return fileName.withCString { cString in
             return _RaylibC.LoadWave(cString)
@@ -55,7 +55,7 @@ public extension Raylib {
     }
     
     /// Load wave from memory buffer, fileType refers to extension: i.e. ".wav"
-    @_transparent
+    @inlinable
     static func LoadWaveFromMemory(_ fileType: String, _ fileData: UnsafePointer<UInt8>!, _ dataSize: Int32) -> Wave {
         return fileType.withCString { fileCString in
             return _RaylibC.LoadWaveFromMemory(fileCString, fileData, dataSize)
@@ -63,7 +63,7 @@ public extension Raylib {
     }
     
     /// Load sound from file
-    @_transparent
+    @inlinable
     static func loadSound(_ fileName: String) -> Sound {
         return fileName.withCString { cString in
             return _RaylibC.LoadSound(cString)
@@ -71,31 +71,31 @@ public extension Raylib {
     }
     
     /// Load sound from wave data
-    @_transparent
+    @inlinable
     static func loadSoundFromWave(_ wave: Wave) -> Sound {
         return _RaylibC.LoadSoundFromWave(wave)
     }
     
     /// Update sound buffer with new data
-    @_transparent
-    static func UpdateSound(_ sound: Sound, _ data: UnsafeRawPointer!, _ samplesCount: Int32) {
+    @inlinable
+    static func updateSound(_ sound: Sound, _ data: UnsafeRawPointer!, _ samplesCount: Int32) {
         return _RaylibC.UpdateSound(sound, data, samplesCount)
     }
     
     /// Unload wave data
-    @_transparent
+    @inlinable
     static func unloadWave(_ wave: Wave) {
         _RaylibC.UnloadWave(wave)
     }
     
     /// Unload sound
-    @_transparent
+    @inlinable
     static func unloadSound(_ sound: Sound) {
         _RaylibC.UnloadSound(sound)
     }
     
     /// Export wave data to file, returns true on success
-    @_transparent
+    @inlinable
     static func exportWave(_ wave: Wave, _ fileName: String) -> Bool {
         return fileName.withCString { cString in
             let result = _RaylibC.ExportWave(wave, cString)
@@ -108,7 +108,7 @@ public extension Raylib {
     }
     
     /// Export wave sample data to code (.h), returns true on success
-    @_transparent
+    @inlinable
     static func exportWaveAsCode(_ wave: Wave, _ fileName: String) -> Bool {
         return fileName.withCString { cString in
             let result = _RaylibC.ExportWaveAsCode(wave, cString)
@@ -119,53 +119,55 @@ public extension Raylib {
 #endif
         }
     }
-    
-    //MARK: - Wave/Sound management functions
-    
+}
+
+
+//MARK: - Wave/Sound management functions
+public extension Raylib {
     /// Play a sound
-    @_transparent
+    @inlinable
     static func playSound(_ sound: Sound) {
         _RaylibC.PlaySound(sound)
     }
     
     /// Stop playing a sound
-    @_transparent
+    @inlinable
     static func stopSound(_ sound: Sound) {
         _RaylibC.StopSound(sound)
     }
     
     /// Pause a sound
-    @_transparent
+    @inlinable
     static func pauseSound(_ sound: Sound) {
         _RaylibC.PauseSound(sound)
     }
     
     /// Resume a paused sound
-    @_transparent
+    @inlinable
     static func resumeSound(_ sound: Sound) {
         _RaylibC.ResumeSound(sound)
     }
     
     /// Play a sound (using multichannel buffer pool)
-    @_transparent
+    @inlinable
     static func playSoundMulti(_ sound: Sound) {
         _RaylibC.PlaySoundMulti(sound)
     }
     
     /// Stop any sound playing (using multichannel buffer pool)
-    @_transparent
+    @inlinable
     static func stopSoundMulti() {
         _RaylibC.StopSoundMulti()
     }
     
     /// Get number of sounds playing in the multichannel
-    @_transparent
+    @inlinable
     static func getSoundsPlaying() -> Int32 {
         return _RaylibC.GetSoundsPlaying()
     }
     
     /// Check if a sound is currently playing
-    @_transparent
+    @inlinable
     static func isSoundPlaying(_ sound: Sound) -> Bool {
         let result = _RaylibC.IsSoundPlaying(sound)
 #if os(Windows)
@@ -176,53 +178,57 @@ public extension Raylib {
     }
     
     /// Set volume for a sound (1.0 is max level)
-    @_transparent
+    @inlinable
     static func setSoundVolume(_ sound: Sound, _ volume: Float) {
         _RaylibC.SetSoundVolume(sound, volume)
     }
     
     /// Set pitch for a sound (1.0 is base level)
-    @_transparent
+    @inlinable
     static func setSoundPitch(_ sound: Sound, _ pitch: Float) {
         _RaylibC.SetSoundPitch(sound, pitch)
     }
     
     /// Convert wave data to desired format
-    @_transparent
+    @inlinable
     static func waveFormat(_ wave: inout Wave, _ sampleRate: Int32, _ sampleSize: Int32, _ channels: Int32) {
         _RaylibC.WaveFormat(&wave, sampleRate, sampleSize, channels)
     }
     
     /// Copy a wave to a new wave
-    @_transparent
+    @inlinable
     static func waveCopy(_ wave: Wave) -> Wave {
         return _RaylibC.WaveCopy(wave)
     }
     
     /// Crop a wave to defined samples range
-    @_transparent
+    @inlinable
     static func waveCrop(_ wave: inout Wave, _ initSample: Int32, _ finalSample: Int32) {
         _RaylibC.WaveCrop(&wave, initSample, finalSample)
     }
     
     /// Load samples data from wave as a floats array
-    @_transparent
+    @inlinable
     static func loadWaveSamples(_ wave: Wave) -> [Float] {
         let buffer = UnsafeMutableBufferPointer(start: _RaylibC.LoadWaveSamples(wave), count: Int(wave.frameCount))
-        return Array(buffer)
+        let array = Array(buffer)
+        _RaylibC.UnloadWaveSamples(buffer.baseAddress)
+        return array
     }
     
     /// Unload samples data loaded with LoadWaveSamples()
-    @_transparent @available(*, unavailable, message: "Swift manages memory. There's no need to call this.")
+    @inlinable @available(*, unavailable, message: "Swift manages memory. There's no need to call this.")
     static func unloadWaveSamples(_ samples: [Float]) {
         var samples = samples
         _RaylibC.UnloadWaveSamples(&samples)
     }
-    
-    //MARK: - Music management functions
-    
+}
+
+
+//MARK: - Music management functions
+public extension Raylib {
     /// Load music stream from file
-    @_transparent
+    @inlinable
     static func loadMusicStream(_ fileName: String) -> Music {
         return fileName.withCString { cString in
             return _RaylibC.LoadMusicStream(cString)
@@ -230,7 +236,7 @@ public extension Raylib {
     }
     
     /// Load music stream from data
-    @_transparent
+    @inlinable
     static func loadMusicStreamFromMemory(_ fileType: String, _ data: UnsafeMutablePointer<UInt8>!, _ dataSize: Int32) -> Music {
         return fileType.withCString { fileCString in
             return _RaylibC.LoadMusicStreamFromMemory(fileCString, data, dataSize)
@@ -238,19 +244,19 @@ public extension Raylib {
     }
     
     /// Unload music stream
-    @_transparent
+    @inlinable
     static func unloadMusicStream(_ music: Music) {
         _RaylibC.UnloadMusicStream(music)
     }
     
     /// Start music playing
-    @_transparent
+    @inlinable
     static func playMusicStream(_ music: Music) {
         _RaylibC.PlayMusicStream(music)
     }
     
     /// Check if music is playing
-    @_transparent
+    @inlinable
     static func isMusicStreamPlaying(_ music: Music) -> Bool {
         let result = _RaylibC.IsMusicStreamPlaying(music)
 #if os(Windows)
@@ -261,75 +267,83 @@ public extension Raylib {
     }
     
     /// Updates buffers for music streaming
-    @_transparent
+    @inlinable
     static func updateMusicStream(_ music: Music) {
         _RaylibC.UpdateMusicStream(music)
     }
     
     /// Stop music playing
-    @_transparent
+    @inlinable
     static func stopMusicStream(_ music: Music) {
         _RaylibC.StopMusicStream(music)
     }
     
     /// Pause music playing
-    @_transparent
+    @inlinable
     static func pauseMusicStream(_ music: Music) {
         _RaylibC.PauseMusicStream(music)
     }
     
     /// Resume playing paused music
-    @_transparent
+    @inlinable
     static func resumeMusicStream(_ music: Music) {
         _RaylibC.ResumeMusicStream(music)
     }
     
+    /// Seek music to a position (in seconds)
+    @inlinable
+    static func seekMusicStream(_ music: Music, _ position: Float) {
+        _RaylibC.SeekMusicStream(music, position)
+    }
+    
     /// Set volume for music (1.0 is max level)
-    @_transparent
+    @inlinable
     static func setMusicVolume(_ music: Music, _ volume: Float) {
         _RaylibC.SetMusicVolume(music, volume)
     }
     
     /// Set pitch for a music (1.0 is base level)
-    @_transparent
+    @inlinable
     static func setMusicPitch(_ music: Music, _ pitch: Float) {
         _RaylibC.SetMusicPitch(music, pitch)
     }
     
     /// Get music time length (in seconds)
-    @_transparent
+    @inlinable
     static func getMusicTimeLength(_ music: Music) -> Float {
         return _RaylibC.GetMusicTimeLength(music)
     }
     
     /// Get current music time played (in seconds)
-    @_transparent
+    @inlinable
     static func getMusicTimePlayed(_ music: Music) -> Float {
         return _RaylibC.GetMusicTimeLength(music)
     }
-    
-    //MARK: - AudioStream management functions
-    
-    /// Load audio stream (to stream raw audio pcm data)
-    @_transparent
+}
+
+
+//MARK: - AudioStream management functions
+public extension Raylib {
+    /// Init audio stream (to stream raw audio pcm data)
+    @inlinable
     static func loadAudioStream(_ sampleRate: UInt32, _ sampleSize: UInt32, _ channels: UInt32) -> AudioStream {
         return _RaylibC.LoadAudioStream(sampleRate, sampleSize, channels)
     }
     
-    /// Update audio stream buffers with data
-    @_transparent
-    static func updateAudioStream(_ stream: AudioStream, _ data: UnsafeRawPointer!, _ samplesCount: Int32) {
-        _RaylibC.UpdateAudioStream(stream, data, samplesCount)
-    }
-    
-    /// Close audio stream and free memory
-    @_transparent
+    /// Unload audio stream and free memory
+    @inlinable
     static func unloadAudioStream(_ stream: AudioStream) {
         _RaylibC.UnloadAudioStream(stream)
     }
     
+    /// Update audio stream buffers with data
+    @inlinable
+    static func updateAudioStream(_ stream: AudioStream, _ data: UnsafeRawPointer!, _ samplesCount: Int32) {
+        _RaylibC.UpdateAudioStream(stream, data, samplesCount)
+    }
+    
     /// Check if any audio stream buffers requires refill
-    @_transparent
+    @inlinable
     static func isAudioStreamProcessed(_ stream: AudioStream) -> Bool {
         let result = _RaylibC.IsAudioStreamPlaying(stream)
 #if os(Windows)
@@ -340,25 +354,25 @@ public extension Raylib {
     }
     
     /// Play audio stream
-    @_transparent
+    @inlinable
     static func playAudioStream(_ stream: AudioStream) {
         _RaylibC.PlayAudioStream(stream)
     }
     
     /// Pause audio stream
-    @_transparent
+    @inlinable
     static func pauseAudioStream(_ stream: AudioStream) {
         _RaylibC.PauseAudioStream(stream)
     }
     
     /// Resume audio stream
-    @_transparent
+    @inlinable
     static func resumeAudioStream(_ stream: AudioStream) {
         _RaylibC.ResumeAudioStream(stream)
     }
     
     /// Check if audio stream is playing
-    @_transparent
+    @inlinable
     static func isAudioStreamPlaying(_ stream: AudioStream) -> Bool {
         let result = _RaylibC.IsAudioStreamPlaying(stream)
 #if os(Windows)
@@ -369,25 +383,25 @@ public extension Raylib {
     }
     
     /// Stop audio stream
-    @_transparent
+    @inlinable
     static func stopAudioStream(_ stream: AudioStream) {
         _RaylibC.StopAudioStream(stream)
     }
     
     /// Set volume for audio stream (1.0 is max level)
-    @_transparent
+    @inlinable
     static func setAudioStreamVolume(_ stream: AudioStream, _ volume: Float) {
         _RaylibC.SetAudioStreamVolume(stream, volume)
     }
     
     /// Set pitch for audio stream (1.0 is base level)
-    @_transparent
+    @inlinable
     static func setAudioStreamPitch(_ stream: AudioStream, _ pitch: Float) {
         _RaylibC.SetAudioStreamPitch(stream, pitch)
     }
     
     /// Default size for new audio streams
-    @_transparent
+    @inlinable
     static func setAudioStreamBufferSizeDefault(_ size: Int32) {
         _RaylibC.SetAudioStreamBufferSizeDefault(size)
     }
