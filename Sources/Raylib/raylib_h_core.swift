@@ -236,13 +236,13 @@ public extension Raylib {
         return _RaylibC.GetMonitorPosition(monitor)
     }
     
-    /// Get specified monitor width (max available by monitor)
+    /// Get specified monitor width (current video mode used by monitor)
     @inlinable
     static func getMonitorWidth(_ monitor: Int32) -> Int32 {
         return _RaylibC.GetMonitorWidth(monitor)
     }
     
-    /// Get specified monitor height (max available by monitor)
+    /// Get specified monitor height (current video mode used by monitor)
     @inlinable
     static func getMonitorHeight(_ monitor: Int32) -> Int32 {
         return _RaylibC.GetMonitorHeight(monitor)
@@ -295,6 +295,18 @@ public extension Raylib {
     static func getClipboardText() -> String {
         return String(cString: _RaylibC.GetClipboardText())
     }
+    
+    /// Enable waiting for events on EndDrawing(), no automatic event polling
+    @inlinable
+    static func enableEventWaiting() {
+        _RaylibC.EnableEventWaiting()
+    }
+    
+    /// Disable waiting for events on EndDrawing(), automatic events polling
+    @inlinable
+    static func disableEventWaiting() {
+        _RaylibC.DisableEventWaiting()
+    }
 }
 
 
@@ -323,7 +335,7 @@ public extension Raylib {
     ///         By default EndDrawing() does this job: draws everything + SwapScreenBuffer() + manage frame timming + PollInputEvents()
     ///         To avoid that behaviour and control frame processes manually, enable in config.h: SUPPORT_CUSTOM_FRAME_CONTROL
     @inlinable
-    static func waitTime(_ ms: Float) {
+    static func waitTime(_ ms: Double) {
         _RaylibC.WaitTime(ms)
     }
 }
@@ -601,6 +613,12 @@ public extension Raylib {
         return _RaylibC.GetWorldToScreen(position, camera)
     }
     
+    /// Get the world space position for a 2d camera screen space position
+    @inlinable
+    static func getScreenToWorld2D(_ position: Vector2, _ camera: Camera2D) -> Vector2 {
+        return _RaylibC.GetScreenToWorld2D(position, camera)
+    }
+    
     /// Get size position for a 3d world space position
     @inlinable
     static func getWorldToScreenEx(_ position: Vector3, _ camera: Camera, _ width: Int32, _ height: Int32) -> Vector2 {
@@ -611,12 +629,6 @@ public extension Raylib {
     @inlinable
     static func getWorldToScreen2D(_ position: Vector2, _ camera: Camera2D) -> Vector2 {
         return _RaylibC.GetWorldToScreen2D(position, camera)
-    }
-    
-    /// Get the world space position for a 2d camera screen space position
-    @inlinable
-    static func getScreenToWorld2D(_ position: Vector2, _ camera: Camera2D) -> Vector2 {
-        return _RaylibC.GetScreenToWorld2D(position, camera)
     }
 }
 
@@ -711,6 +723,14 @@ public extension Raylib {
     static func memFree(_ ptr: UnsafeMutableRawPointer!) {
         _RaylibC.MemFree(ptr)
     }
+    
+    /// Open URL with default system browser (if available)
+    @inlinable
+    static func openURL(_ url: String) {
+        url.withCString { cString in
+            _RaylibC.OpenURL(cString)
+        }
+    }
 }
 
 
@@ -756,6 +776,14 @@ public extension Raylib {
 
 
 //MARK: - Files management functions
+
+public extension _RaylibC.FilePathList {
+    @inlinable
+    func paths() -> [String] {
+        let buffer = UnsafeMutableBufferPointer(start: self.paths, count: Int(self.count))
+        return buffer.compactMap({$0}).map({String(cString: $0)})
+    }
+}
 public extension Raylib {
     /// Load file data as byte array (read)
     @inlinable
@@ -776,6 +804,19 @@ public extension Raylib {
     static func saveFileData(_ fileName: String, _ data: UnsafeMutableRawPointer!, _ bytesToWrite: UInt32) -> Bool {
         return fileName.withCString { cString in
             let result = _RaylibC.SaveFileData(cString, data, bytesToWrite)
+#if os(Windows)
+            return result.rawValue != 0
+#else
+            return result
+#endif
+        }
+    }
+    
+    /// Export data to code (.h), returns true on success
+    @inlinable
+    static func exportDataAsCode(_ data: UnsafeMutableRawPointer!, _ size: UInt32, _ fileName: String) -> Bool {
+        return fileName.withCString { cString in
+            let result = _RaylibC.ExportDataAsCode(data, size, cString)
 #if os(Windows)
             return result.rawValue != 0
 #else
@@ -904,23 +945,6 @@ public extension Raylib {
         return String(cString: _RaylibC.GetWorkingDirectory())
     }
     
-    /// Get filenames in a directory path (memory should be freed)
-    @inlinable
-    static func getDirectoryFiles(_ dirPath: String) -> [String] {
-        return dirPath.withCString { cString in
-            var count: Int32 = 0
-            let result = _RaylibC.GetDirectoryFiles(cString, &count)
-            let buffer = UnsafeMutableBufferPointer(start: result, count: Int(count))
-            return buffer.compactMap({$0}).map({String(cString: $0)})
-        }
-    }
-    
-    /// Clear directory files paths buffers (free memory)
-    @inlinable
-    static func clearDirectoryFiles() {
-        _RaylibC.ClearDirectoryFiles()
-    }
-    
     /// Change working directory, return true on success
     @inlinable
     static func changeDirectory(_ dir: String) -> Bool {
@@ -934,6 +958,43 @@ public extension Raylib {
         }
     }
     
+    /// Check if a given path is a file or a directory
+    @inlinable
+    static func isPathFile(_ path: String) -> Bool {
+        return path.withCString { cString in
+            let result = _RaylibC.IsPathFile(cString)
+#if os(Windows)
+            return result.rawValue != 0
+#else
+            return result
+#endif
+        }
+    }
+    
+    /// Load directory filepaths
+    @inlinable
+    static func loadDirectoryFiles(_ dirPath: String) -> FilePathList {
+        return dirPath.withCString { cString in
+            return _RaylibC.LoadDirectoryFiles(cString)
+        }
+    }
+    
+    /// Load directory filepaths with extension filtering and recursive directory scan
+    @inlinable
+    static func loadDirectoryFilesEx(_ basePath: String, _ filter: String, _ scanSubdirs: Bool) -> FilePathList {
+        return basePath.withCString { basePathCString in
+            return filter.withCString { filterCString in
+                return _RaylibC.LoadDirectoryFilesEx(basePathCString, filterCString, scanSubdirs)
+            }
+        }
+    }
+    
+    /// Unload filepaths
+    @inlinable
+    static func unloadDirectoryFiles(_ files: FilePathList) {
+        _RaylibC.UnloadDirectoryFiles(files)
+    }
+    
     /// Check if a file has been dropped into window
     @inlinable
     static var isFileDropped: Bool {
@@ -945,19 +1006,16 @@ public extension Raylib {
 #endif
     }
     
-    /// Get dropped files names (memory should be freed)
+    /// Load dropped filepaths
     @inlinable
-    static func getDroppedFiles() -> [String] {
-        var count: Int32 = 0
-        let result = _RaylibC.GetDroppedFiles(&count)
-        let buffer = UnsafeMutableBufferPointer(start: result, count: Int(count))
-        return buffer.compactMap({$0}).map({String(cString: $0)})
+    static func loadDroppedFiles() -> FilePathList {
+        return _RaylibC.LoadDroppedFiles()
     }
     
-    /// Clear dropped files paths buffer (free memory)
+    /// Unload dropped filepaths
     @inlinable
-    static func clearDroppedFiles() {
-        _RaylibC.ClearDroppedFiles()
+    static func unloadDroppedFiles(_ files: FilePathList) {
+        _RaylibC.UnloadDroppedFiles(files)
     }
     
     /// Get file modification time (last write time)
@@ -972,60 +1030,30 @@ public extension Raylib {
 
 //MARK: - Compression/Encoding functionality
 public extension Raylib {
-    /// Compress data (DEFLATE algorithm)
+    /// Compress data (DEFLATE algorithm), memory must be MemFree()
     @inlinable
     static func compressData(_ data: UnsafeMutablePointer<UInt8>!, _ dataLength: Int32, _ compDataLength: inout Int32) -> UnsafeMutablePointer<UInt8>! {
         return _RaylibC.CompressData(data, dataLength, &compDataLength)
     }
     
-    /// Decompress data (DEFLATE algorithm)
+    /// Decompress data (DEFLATE algorithm), memory must be MemFree()
     @inlinable
     static func decompressData(_ compData: UnsafeMutablePointer<UInt8>!, _ compDataLength: Int32, _ dataLength: inout Int32) -> UnsafeMutablePointer<UInt8>! {
         return _RaylibC.DecompressData(compData, compDataLength, &dataLength)
     }
     
-    /// Encode data to Base64 string
+    /// Encode data to Base64 string, memory must be MemFree()
     @available(*, deprecated, message: "Use Swift's Foundation `Data` API")
     static func encodeDataBase64(_ data: UnsafePointer<UInt8>!, _ dataLength: Int32, _ outputLength: UnsafeMutablePointer<Int32>!) -> UnsafeMutablePointer<CChar>? {
         return _RaylibC.EncodeDataBase64(data, dataLength, outputLength)
     }
     
-    /// Decode Base64 string data
+    /// Decode Base64 string data, memory must be MemFree()
     @available(*, deprecated, message: "Use Swift's Foundation `Data` API")
     static func decodeDataBase64(_ data: UnsafeMutablePointer<UInt8>, _ outputLength: UnsafeMutablePointer<Int32>) -> UnsafeMutablePointer<UInt8> {
         return _RaylibC.DecodeDataBase64(data, outputLength)
     }
 }
-
-//MARK: - Persistent storage management
-public extension Raylib {
-    /// Save integer value to storage file (to defined position), returns true on success
-    @inlinable
-    static func saveStorageValue(_ position: UInt32, _ value: Int32) -> Bool {
-        let result = _RaylibC.SaveStorageValue(position, value)
-#if os(Windows)
-        return result.rawValue != 0
-#else
-        return result
-#endif
-    }
-    
-    /// Load integer value from storage file (from defined position)
-    @inlinable
-    static func loadStorageValue(_ position: UInt32) -> Int32 {
-        return _RaylibC.LoadStorageValue(position)
-    }
-    
-    /// Open URL with default system browser (if available)
-    @inlinable
-    static func openURL(_ url: String) {
-        url.withCString { cString in
-            _RaylibC.OpenURL(cString)
-        }
-    }
-}
-
-
 
 //------------------------------------------------------------------------------------
 // Input Handling Functions (Module: core)
@@ -1273,10 +1301,16 @@ public extension Raylib {
         _RaylibC.SetMouseScale(scaleX, scaleY)
     }
     
-    /// Get mouse wheel movement Y
+    /// Get mouse wheel movement for X or Y, whichever is larger
     @inlinable
     static func getMouseWheelMove() -> Float {
         return _RaylibC.GetMouseWheelMove()
+    }
+    
+    /// Get mouse wheel movement for both X and Y
+    @inlinable
+    static func getMouseWheelMoveV() -> Vector2 {
+        return _RaylibC.GetMouseWheelMoveV()
     }
     
     /// Set mouse cursor
