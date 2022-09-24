@@ -8,23 +8,89 @@
 [![Reddit](https://img.shields.io/reddit/subreddit-subscribers/stregasgate?style=social)](https://www.reddit.com/r/stregasgate/)
 [![Discord](https://img.shields.io/discord/641809158051725322?label=Hang%20Out&logo=Discord&style=social)](https://discord.gg/5JdRJhD)
 
-This package brings Raylib to Swift.
-## Setup
-Raylib for Swift uses Swift's C interoperability and compiler to build Raylib from source code.
-So there's no setup required, just add the package as a dependency and start making games!
+This package brings [Raylib](https://www.raylib.com/) to [Swift](https://www.swift.org/).
+
+Raylib for Swift uses Swift's C interoperability and compiler to build Raylib from source code. Just add the package as a dependency (to your swift executable package) and start making games!
+
+## Requirements & Setup
+
+On Windows and macOS you only need Swift. For Linux, see [install required libraries](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux#install-required-libraries).
+
+### Creating a new project
+
+1. Create a Swift package for your project.
+
+```Bash
+$ cd my/projects/folder/path
+$ mkdir My_Game
+$ cd My_Game
+$ swift package init --type executable
+```
+
+2. Edit the newly created `Package.swift` to add Raylib to the dependencies array:
+
 ```swift
 .package(url: "https://github.com/STREGAsGate/Raylib.git", .branch("master"))
 ```
-Note: `.branch("master")` is required, you cannot use tags, commits, or versions. Swift doesn't allow unsafe build flags for specific versionsand build flags are required to build Raylib, so you must use master at this time or you will get an error from SwiftPM.
-On Windows and macOS you only need Swift. For linux, see [install required libraries](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux#install-required-libraries).
 
-## Swifty
-Original global functions are now static members of the `Raylib` type.
+  > Note: `.branch("master")` is required, you cannot use tags, commits, or versions. Swift doesn't allow unsafe build flags for specific versions and build flags are required to build Raylib, so you must use master at this time or you will get an error from SwiftPM.
+
+3. Find the `@main` struct in the Swift package and replace it (or its contents) with something like the following:
+
+```Swift
+import Raylib
+
+@main
+public struct App {
+
+    static let screenWidth: Int32 = 800
+    static let screenHeight: Int32 = 450
+
+    public static func main() {
+
+        Raylib.initWindow(screenWidth, screenHeight, "My_Game window")
+        Raylib.setTargetFPS(30)
+
+        let randomColors: [Color] = [.blue, .red, .green, .yellow, .darkBlue, .maroon, .magenta]
+        var ballColor: Color = .maroon
+        var ballPosition: Vector2 = .init(x: -100, y: -100)
+        var previousBallPosition: Vector2
+
+        while Raylib.windowShouldClose == false {
+
+            // update
+            previousBallPosition = ballPosition
+            ballPosition = Raylib.getMousePosition()
+            if Raylib.isMouseButtonDown(.left) {
+                ballColor = randomColors.randomElement() ?? .black
+            }
+            let size = max(abs(ballPosition.x - previousBallPosition.x) + abs(ballPosition.y - previousBallPosition.y), 10)
+
+            // draw
+            Raylib.beginDrawing()
+            Raylib.clearBackground(.rayWhite)
+
+            Raylib.drawText("Hello, world!", 425, 25, 25, .darkGray)
+
+            Raylib.drawCircleV(ballPosition, size, ballColor)
+
+            Raylib.drawFPS(10, 10)
+            Raylib.endDrawing()
+        }
+
+        Raylib.closeWindow()
+    }
+}
+```
+
+## About
+
+Original Raylib global functions are now static members of the `Raylib` type.
+
 ```swift
 Raylib.initWindow(screenWidth, screenheight, "My First Raylib Window!")
 ```
 
-## To Do
 It's a goal of this project to have all the global functions available on their respective types as members.
 
 As an example `Image`, now has new initializers.
@@ -33,6 +99,8 @@ let image = Image(color: .green, width: 256, height: 256)
 ```
 Doing this for the entire API will increase discoverability and make Raylib for Swift a more Swifty experience.
 
+---
+Below is the original [Raylib](https://github.com/raysan5/raylib) README.
 ---
 # Official Readme
 
