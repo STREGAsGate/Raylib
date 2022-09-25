@@ -15,7 +15,6 @@ So there's no setup required, just add the package as a dependency and start mak
 ```swift
 .package(url: "https://github.com/STREGAsGate/Raylib.git", .branch("master"))
 ```
-Note: `.branch("master")` is required, you cannot use tags, commits, or versions. Swift doesn't allow unsafe build flags for specific versionsand build flags are required to build Raylib, so you must use master at this time or you will get an error from SwiftPM.
 On Windows and macOS you only need Swift. For linux, see [install required libraries](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux#install-required-libraries).
 
 ## Swifty

@@ -19,9 +19,7 @@ var cSettings: [CSetting] {
     
     // macOS
     array.append(.define("HOST_PLATFORM_OS", to: "OSX", .when(platforms: [.macOS])))
-    array.append(.define("_GLFW_COCOA", .when(platforms: [.macOS])))
-    array.append(.unsafeFlags(["-x", "objective-c", "-fno-objc-arc"], .when(platforms: [.macOS])))
-    
+    array.append(.define("_GLFW_COCOA", .when(platforms: [.macOS])))    
     
     array.append(.headerSearchPath("UnmodifiedRaylibSrc/external/glfw/include"))
     array.append(.headerSearchPath("UnmodifiedRaylibSrc"))
@@ -39,6 +37,10 @@ var sources: [String] {
     // GLFW Common
     let glfw = ["context.c", "init.c", "input.c", "monitor.c", "vulkan.c", "window.c"]
     array.append(contentsOf: glfw.map({"UnmodifiedRaylibSrc/external/glfw/src/" + $0}))
+#if os(macOS)
+    let macOSModified = ["cocoa_init.m", "cocoa_window.m", "nsgl_context.m"]
+    array.append(contentsOf: macOSModified.map({"ModifiedRaylibSrc/external/glfw/src/" + $0}))
+#endif
     
 #if os(macOS)
     let mac = ["cocoa_init.m", "cocoa_joystick.m", "cocoa_monitor.m", "cocoa_window.m", "cocoa_time.c", "posix_thread.c", "nsgl_context.m", "egl_context.c", "osmesa_context.c"]
@@ -67,7 +69,8 @@ let package = Package(
         .target(name: "Example", dependencies: ["Raylib"]),
         .target(name: "Raylib", dependencies: ["_RaylibC"]),
         .target(name: "_RaylibC", exclude: exclude, sources: sources, publicHeadersPath: "Include", cSettings: cSettings),
-    ]
+    ],
+    cLanguageStandard: .c99
 )
 
 #if os(macOS)
@@ -130,6 +133,11 @@ var exclude: [String] {
         "UnmodifiedRaylibSrc/external/glfw/src/glx_context.c",
         "UnmodifiedRaylibSrc/build.zig",
         "UnmodifiedRaylibSrc/minshell.html",
+        
+        // Replaced with modified source
+        "UnmodifiedRaylibSrc/external/glfw/src/cocoa_init.m",
+        "UnmodifiedRaylibSrc/external/glfw/src/cocoa_window.m",
+        "UnmodifiedRaylibSrc/external/glfw/src/nsgl_context.m",
     ]
 }
 #endif
