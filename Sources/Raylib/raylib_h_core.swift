@@ -1166,7 +1166,7 @@ public extension Raylib {
     /// Get the last gamepad button pressed
     @inlinable
     static func getGamepadButtonPressed() -> GamepadButton {
-        return GamepadButton(rawValue: _RaylibC.GetGamepadButtonPressed())!
+        return GamepadButton(rawValue: _RaylibC.GetGamepadButtonPressed()) ?? .unknown
     }
     
     /// Get gamepad axis count for a gamepad
