@@ -8,6 +8,7 @@ var cSettings: [CSetting] {
         
     array.append(.define("PLATFORM_DESKTOP", .when(platforms: [.macOS, .windows, .linux])))
     array.append(.define("SUPPORT_DEFAULT_FONT"))
+    array.append(.define("_DEBUG", .when(configuration: .debug)))
     
     // Windows
     array.append(.define("HOST_PLATFORM_OS", to: "WINDOWS", .when(platforms: [.windows])))
@@ -16,11 +17,12 @@ var cSettings: [CSetting] {
     // Linux
     array.append(.define("HOST_PLATFORM_OS", to: "LINUX", .when(platforms: [.linux])))
     array.append(.define("_GLFW_X11", .when(platforms: [.linux])))
+    array.append(.define("_DEFAULT_SOURCE", .when(platforms: [.linux])))
     
     // macOS
     array.append(.define("HOST_PLATFORM_OS", to: "OSX", .when(platforms: [.macOS])))
-    array.append(.define("_GLFW_COCOA", .when(platforms: [.macOS])))    
-    
+    array.append(.define("_GLFW_COCOA", .when(platforms: [.macOS])))
+
     array.append(.headerSearchPath("UnmodifiedRaylibSrc/external/glfw/include"))
     array.append(.headerSearchPath("UnmodifiedRaylibSrc"))
     
