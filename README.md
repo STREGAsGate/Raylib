@@ -18,69 +18,53 @@ On Windows and macOS you only need Swift. For Linux, see [install required libra
 
 ### Creating a new project
 
-1. Create a Swift package for your project.
+**1.** Create a Swift package for your project.
 
 ```Bash
 $ cd my/projects/folder/path
-$ mkdir My_Game
-$ cd My_Game
+$ mkdir MyGame
+$ cd MyGame
 $ swift package init --type executable
 ```
 
-2. Edit the newly created `Package.swift` to add Raylib to the dependencies array:
+**2.** Edit the newly created `Package.swift` to add Raylib to the dependencies array:
 
 ```swift
-.package(url: "https://github.com/STREGAsGate/Raylib.git", .branch("master"))
+.package(url: "https://github.com/STREGAsGate/Raylib.git", branch: "master")
 ```
 
   > Note: `.branch("master")` is required, you cannot use tags, commits, or versions. Swift doesn't allow unsafe build flags for specific versions and build flags are required to build Raylib, so you must use master at this time or you will get an error from SwiftPM.
 
-3. Find the `@main` struct in the Swift package and replace it (or its contents) with something like the following:
+**3.** Add the following to the `static func main()` in MyGame.swift.
 
 ```Swift
-import Raylib
+    let screenWidth: Int32 = 800
+    let screenHeight: Int32 = 450
 
-@main
-public struct App {
-
-    static let screenWidth: Int32 = 800
-    static let screenHeight: Int32 = 450
-
-    public static func main() {
-
-        Raylib.initWindow(screenWidth, screenHeight, "My_Game window")
-        Raylib.setTargetFPS(30)
-
-        let randomColors: [Color] = [.blue, .red, .green, .yellow, .darkBlue, .maroon, .magenta]
-        var ballColor: Color = .maroon
-        var ballPosition: Vector2 = .init(x: -100, y: -100)
-        var previousBallPosition: Vector2
-
-        while Raylib.windowShouldClose == false {
-
-            // update
-            previousBallPosition = ballPosition
-            ballPosition = Raylib.getMousePosition()
-            if Raylib.isMouseButtonDown(.left) {
-                ballColor = randomColors.randomElement() ?? .black
-            }
-            let size = max(abs(ballPosition.x - previousBallPosition.x) + abs(ballPosition.y - previousBallPosition.y), 10)
-
-            // draw
-            Raylib.beginDrawing()
-            Raylib.clearBackground(.rayWhite)
-
-            Raylib.drawText("Hello, world!", 425, 25, 25, .darkGray)
-
-            Raylib.drawCircleV(ballPosition, size, ballColor)
-
-            Raylib.drawFPS(10, 10)
-            Raylib.endDrawing()
+    Raylib.initWindow(screenWidth, screenHeight, "MyGame")
+    Raylib.setTargetFPS(30)
+    let randomColors: [Color] = [.blue, .red, .green, .yellow, .darkBlue, .maroon, .magenta]
+    var ballColor: Color = .maroon
+    var ballPosition = Vector2(x: -100, y: -100)
+    var previousBallPosition: Vector2
+    while Raylib.windowShouldClose == false {
+        // update
+        previousBallPosition = ballPosition
+        ballPosition = Raylib.getMousePosition()
+        if Raylib.isMouseButtonDown(.left) {
+            ballColor = randomColors.randomElement() ?? .black
         }
+        let size = max(abs(ballPosition.x - previousBallPosition.x) + abs(ballPosition.y - previousBallPosition.y), 10)
 
-        Raylib.closeWindow()
+        // draw
+        Raylib.beginDrawing()
+        Raylib.clearBackground(.rayWhite)
+        Raylib.drawText("Hello, world!", 425, 25, 25, .darkGray)
+        Raylib.drawCircleV(ballPosition, size, ballColor)
+        Raylib.drawFPS(10, 10)
+        Raylib.endDrawing()
     }
-}
+    Raylib.closeWindow()
 ```
 
 ## About
@@ -100,9 +84,7 @@ let image = Image(color: .green, width: 256, height: 256)
 Doing this for the entire API will increase discoverability and make Raylib for Swift a more Swifty experience.
 
 ---
-Below is the original [Raylib](https://github.com/raysan5/raylib) README.
----
-# Official Readme
+# Below is the original [Raylib](https://github.com/raysan5/raylib) README.
 
 <img align="left" src="https://github.com/raysan5/raylib/blob/master/logo/raylib_logo_animation.gif" width="288px">
 
