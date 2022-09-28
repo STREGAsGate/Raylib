@@ -33,6 +33,8 @@ $ swift package init --type executable
 .package(url: "https://github.com/STREGAsGate/Raylib.git", branch: "master")
 ```
 
+On Windows and macOS you only need Swift. For linux, see [install required libraries](https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux#install-required-libraries).
+
   > Note: `.branch("master")` is required, you cannot use tags, commits, or versions. Swift doesn't allow unsafe build flags for specific versions and build flags are required to build Raylib, so you must use master at this time or you will get an error from SwiftPM.
 
 **3.** Add the following to the `static func main()` in MyGame.swift.
