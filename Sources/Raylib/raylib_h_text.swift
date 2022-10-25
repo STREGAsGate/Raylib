@@ -29,7 +29,7 @@ public extension Raylib {
     
     /// Load font from file with extended parameters
     @inlinable
-    static func loadFontEx(_ fileName: String, _ fontSize: Int32, _ fontChars: [Character]?) -> Font {
+    static func loadFontEx(_ fileName: String, _ fontSize: Int32, _ fontChars: [Character]? = nil) -> Font {
         return fileName.withCString { cString in
             if fontChars == nil {
                 return _RaylibC.LoadFontEx(cString, fontSize, nil, 0)
