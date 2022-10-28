@@ -29,11 +29,15 @@ public extension Raylib {
     
     /// Load font from file with extended parameters
     @inlinable
-    static func loadFontEx(_ fileName: String, _ fontSize: Int32, _ fontChars: [Character]) -> Font {
+    static func loadFontEx(_ fileName: String, _ fontSize: Int32, _ fontChars: [Character]? = nil) -> Font {
         return fileName.withCString { cString in
-            var chars: [Int32] = fontChars.compactMap({$0.utf8.first}).map({Int32($0)})
-            return chars.withUnsafeMutableBufferPointer { bufferPointer in
-                return _RaylibC.LoadFontEx(cString, fontSize, bufferPointer.baseAddress, Int32(bufferPointer.count))
+            if fontChars == nil {
+                return _RaylibC.LoadFontEx(cString, fontSize, nil, 0)
+            } else {
+                var chars: [Int32] = fontChars!.compactMap({$0.utf8.first}).map({Int32($0)})
+                return chars.withUnsafeMutableBufferPointer { bufferPointer in
+                    return _RaylibC.LoadFontEx(cString, fontSize, bufferPointer.baseAddress, Int32(bufferPointer.count))
+                }
             }
         }
     }
