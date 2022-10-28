@@ -17,5 +17,5 @@ public enum CameraMode: Int32 {
     /// First person camera
     case firstPerson
     /// Third person camera
-    case thridPerson
+    case thirdPerson
 }

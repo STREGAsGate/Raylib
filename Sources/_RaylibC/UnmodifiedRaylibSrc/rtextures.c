@@ -37,7 +37,7 @@
 *   DEPENDENCIES:
 *       stb_image        - Multiple image formats loading (JPEG, PNG, BMP, TGA, PSD, GIF, PIC)
 *                          NOTE: stb_image has been slightly modified to support Android platform.
-*       stb_image_resize - Multiple image resize algorythms
+*       stb_image_resize - Multiple image resize algorithms
 *
 *
 *   LICENSE: zlib/libpng
@@ -306,10 +306,9 @@ Image LoadImageFromMemory(const char *fileType, const unsigned char *fileData, i
 {
     Image image = { 0 };
 
-#if defined(SUPPORT_FILEFORMAT_PNG)
-    if ((strcmp(fileType, ".png") == 0)
-#else
     if ((false)
+#if defined(SUPPORT_FILEFORMAT_PNG)
+        || (strcmp(fileType, ".png") == 0)
 #endif
 #if defined(SUPPORT_FILEFORMAT_BMP)
         || (strcmp(fileType, ".bmp") == 0)
@@ -876,11 +875,11 @@ Image ImageFromImage(Image image, Rectangle rec)
 
     result.width = (int)rec.width;
     result.height = (int)rec.height;
-    result.data = RL_CALLOC((int)(rec.width*rec.height)*bytesPerPixel, 1);
+    result.data = RL_CALLOC((int)rec.width*(int)rec.height*bytesPerPixel, 1);
     result.format = image.format;
     result.mipmaps = 1;
 
-    for (int y = 0; y < rec.height; y++)
+    for (int y = 0; y < (int)rec.height; y++)
     {
         memcpy(((unsigned char *)result.data) + y*(int)rec.width*bytesPerPixel, ((unsigned char *)image.data) + ((y + (int)rec.y)*image.width + (int)rec.x)*bytesPerPixel, (int)rec.width*bytesPerPixel);
     }
@@ -1415,10 +1414,12 @@ void ImageResize(Image *image, int newWidth, int newHeight)
     // Security check to avoid program crash
     if ((image->data == NULL) || (image->width == 0) || (image->height == 0)) return;
 
-    bool fastPath = true;
-    if ((image->format != PIXELFORMAT_UNCOMPRESSED_GRAYSCALE) && (image->format != PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA) && (image->format != PIXELFORMAT_UNCOMPRESSED_R8G8B8) && (image->format != PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)) fastPath = true;
-
-    if (fastPath)
+    // Check if we can use a fast path on image scaling
+    // It can be for 8 bit per channel images with 1 to 4 channels per pixel
+    if ((image->format == PIXELFORMAT_UNCOMPRESSED_GRAYSCALE) ||
+        (image->format == PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA) ||
+        (image->format == PIXELFORMAT_UNCOMPRESSED_R8G8B8) ||
+        (image->format == PIXELFORMAT_UNCOMPRESSED_R8G8B8A8))
     {
         int bytesPerPixel = GetPixelDataSize(1, 1, image->format);
         unsigned char *output = (unsigned char *)RL_MALLOC(newWidth*newHeight*bytesPerPixel);
@@ -1890,10 +1891,10 @@ void ImageColorTint(Image *image, Color color)
             unsigned char b = (unsigned char)(((float)pixels[index].b/255*cB)*255.0f);
             unsigned char a = (unsigned char)(((float)pixels[index].a/255*cA)*255.0f);
 
-            pixels[y*image->width + x].r = r;
-            pixels[y*image->width + x].g = g;
-            pixels[y*image->width + x].b = b;
-            pixels[y*image->width + x].a = a;
+            pixels[index].r = r;
+            pixels[index].g = g;
+            pixels[index].b = b;
+            pixels[index].a = a;
         }
     }
 
@@ -1959,25 +1960,25 @@ void ImageColorContrast(Image *image, float contrast)
         for (int x = 0; x < image->width; x++)
         {
             float pR = (float)pixels[y*image->width + x].r/255.0f;
-            pR -= 0.5;
+            pR -= 0.5f;
             pR *= contrast;
-            pR += 0.5;
+            pR += 0.5f;
             pR *= 255;
             if (pR < 0) pR = 0;
             if (pR > 255) pR = 255;
 
             float pG = (float)pixels[y*image->width + x].g/255.0f;
-            pG -= 0.5;
+            pG -= 0.5f;
             pG *= contrast;
-            pG += 0.5;
+            pG += 0.5f;
             pG *= 255;
             if (pG < 0) pG = 0;
             if (pG > 255) pG = 255;
 
             float pB = (float)pixels[y*image->width + x].b/255.0f;
-            pB -= 0.5;
+            pB -= 0.5f;
             pB *= contrast;
-            pB += 0.5;
+            pB += 0.5f;
             pB *= 255;
             if (pB < 0) pB = 0;
             if (pB > 255) pB = 255;
@@ -2412,7 +2413,20 @@ Color GetImageColor(Image image, int x, int y)
 // Clear image background with given color
 void ImageClearBackground(Image *dst, Color color)
 {
-    for (int i = 0; i < dst->width*dst->height; ++i) ImageDrawPixel(dst, i%dst->width, i/dst->width, color);
+    // Security check to avoid program crash
+    if ((dst->data == NULL) || (dst->width == 0) || (dst->height == 0)) return;
+
+    // Fill in first pixel based on image format
+    ImageDrawPixel(dst, 0, 0, color);
+
+    unsigned char *pSrcPixel = (unsigned char *)dst->data;
+    int bytesPerPixel = GetPixelDataSize(1, 1, dst->format);
+
+    // Repeat the first pixel data throughout the image
+    for (int i = 1; i < dst->width * dst->height; i++)
+    {
+        memcpy(pSrcPixel + i * bytesPerPixel, pSrcPixel, bytesPerPixel);
+    }
 }
 
 // Draw pixel within an image
@@ -2686,13 +2700,21 @@ void ImageDrawRectangleRec(Image *dst, Rectangle rec, Color color)
     int ey = sy + (int)rec.height;
 
     int sx = (int)rec.x;
-    int ex = sx + (int)rec.width;
+
+    int bytesPerPixel = GetPixelDataSize(1, 1, dst->format);
 
     for (int y = sy; y < ey; y++)
     {
-        for (int x = sx; x < ex; x++)
+        // Fill in the first pixel of the row based on image format
+        ImageDrawPixel(dst, sx, y, color);
+
+        int bytesOffset = ((y * dst->width) + sx) * bytesPerPixel;
+        unsigned char *pSrcPixel = (unsigned char *)dst->data + bytesOffset;
+
+        // Repeat the first pixel data throughout the row
+        for (int x = 1; x < (int)rec.width; x++)
         {
-            ImageDrawPixel(dst, x, y, color);
+            memcpy(pSrcPixel + x * bytesPerPixel, pSrcPixel, bytesPerPixel);
         }
     }
 }
@@ -3472,6 +3494,8 @@ void DrawTextureNPatch(Texture2D texture, NPatchInfo nPatchInfo, Rectangle dest,
         coordD.x = (nPatchInfo.source.x + nPatchInfo.source.width)/width;
         coordD.y = (nPatchInfo.source.y + nPatchInfo.source.height)/height;
 
+        rlCheckRenderBatchLimit(9 * 3 * 2);         // Maxium number of verts that could happen
+
         rlSetTexture(texture.id);
 
         rlPushMatrix();
@@ -3619,7 +3643,7 @@ void DrawTexturePoly(Texture2D texture, Vector2 center, Vector2 *points, Vector2
 
     rlSetTexture(texture.id);
 
-    // Texturing is only supported on QUADs
+    // Texturing is only supported on RL_QUADS
     rlBegin(RL_QUADS);
 
         rlColor4ub(tint.r, tint.g, tint.b, tint.a);
@@ -3787,10 +3811,10 @@ Color ColorAlphaBlend(Color dst, Color src, Color tint)
     Color out = WHITE;
 
     // Apply color tint to source color
-    src.r = (unsigned char)(((unsigned int)src.r*(unsigned int)tint.r) >> 8);
-    src.g = (unsigned char)(((unsigned int)src.g*(unsigned int)tint.g) >> 8);
-    src.b = (unsigned char)(((unsigned int)src.b*(unsigned int)tint.b) >> 8);
-    src.a = (unsigned char)(((unsigned int)src.a*(unsigned int)tint.a) >> 8);
+    src.r = (unsigned char)(((unsigned int)src.r*((unsigned int)tint.r+1)) >> 8);
+    src.g = (unsigned char)(((unsigned int)src.g*((unsigned int)tint.g+1)) >> 8);
+    src.b = (unsigned char)(((unsigned int)src.b*((unsigned int)tint.b+1)) >> 8);
+    src.a = (unsigned char)(((unsigned int)src.a*((unsigned int)tint.a+1)) >> 8);
 
 //#define COLORALPHABLEND_FLOAT
 #define COLORALPHABLEND_INTEGERS
@@ -4550,7 +4574,7 @@ static Image LoadPVR(const unsigned char *fileData, unsigned int fileSize)
         unsigned int flags;
         unsigned char channels[4];      // pixelFormat high part
         unsigned char channelDepth[4];  // pixelFormat low part
-        unsigned int colourSpace;
+        unsigned int colorSpace;
         unsigned int channelType;
         unsigned int height;
         unsigned int width;

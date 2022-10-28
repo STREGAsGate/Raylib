@@ -200,7 +200,7 @@ void DrawCircle3D(Vector3 center, float radius, Vector3 rotationAxis, float rota
 // Draw a color-filled triangle (vertex in counter-clockwise order!)
 void DrawTriangle3D(Vector3 v1, Vector3 v2, Vector3 v3, Color color)
 {
-    rlCheckRenderBatchLimit(3);
+    rlCheckRenderBatchLimit(8);
 
     rlBegin(RL_TRIANGLES);
         rlColor4ub(color.r, color.g, color.b, color.a);
@@ -1087,7 +1087,7 @@ void UploadMesh(Mesh *mesh, bool dynamic)
     mesh->vaoId = rlLoadVertexArray();
     rlEnableVertexArray(mesh->vaoId);
 
-    // NOTE: Attributes must be uploaded considering default locations points
+    // NOTE: Vertex attributes must be uploaded considering default locations points and available vertex data
 
     // Enable vertex attributes: position (shader-location = 0)
     void *vertices = mesh->animVertices != NULL ? mesh->animVertices : mesh->vertices;
@@ -1100,6 +1100,9 @@ void UploadMesh(Mesh *mesh, bool dynamic)
     rlSetVertexAttribute(1, 2, RL_FLOAT, 0, 0, 0);
     rlEnableVertexAttribute(1);
 
+    // WARNING: When setting default vertex attribute values, the values for each generic vertex attribute
+    // is part of current state and it is maintained even if a different program object is used
+
     if (mesh->normals != NULL)
     {
         // Enable vertex attributes: normals (shader-location = 2)
@@ -1110,7 +1113,8 @@ void UploadMesh(Mesh *mesh, bool dynamic)
     }
     else
     {
-        // Default color vertex attribute set to WHITE
+        // Default vertex attribute: normal
+        // WARNING: Default value provided to shader if location available
         float value[3] = { 1.0f, 1.0f, 1.0f };
         rlSetVertexAttributeDefault(2, value, SHADER_ATTRIB_VEC3, 3);
         rlDisableVertexAttribute(2);
@@ -1125,8 +1129,9 @@ void UploadMesh(Mesh *mesh, bool dynamic)
     }
     else
     {
-        // Default color vertex attribute set to WHITE
-        float value[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        // Default vertex attribute: color
+        // WARNING: Default value provided to shader if location available
+        float value[4] = { 1.0f, 1.0f, 1.0f, 1.0f };    // WHITE
         rlSetVertexAttributeDefault(3, value, SHADER_ATTRIB_VEC4, 4);
         rlDisableVertexAttribute(3);
     }
@@ -1140,7 +1145,8 @@ void UploadMesh(Mesh *mesh, bool dynamic)
     }
     else
     {
-        // Default tangents vertex attribute
+        // Default vertex attribute: tangent
+        // WARNING: Default value provided to shader if location available
         float value[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
         rlSetVertexAttributeDefault(4, value, SHADER_ATTRIB_VEC4, 4);
         rlDisableVertexAttribute(4);
@@ -1155,7 +1161,8 @@ void UploadMesh(Mesh *mesh, bool dynamic)
     }
     else
     {
-        // Default texcoord2 vertex attribute
+        // Default vertex attribute: texcoord2
+        // WARNING: Default value provided to shader if location available
         float value[2] = { 0.0f, 0.0f };
         rlSetVertexAttributeDefault(5, value, SHADER_ATTRIB_VEC2, 2);
         rlDisableVertexAttribute(5);
@@ -1293,8 +1300,10 @@ void DrawMesh(Mesh mesh, Material material, Matrix transform)
         }
     }
 
-    // Try binding vertex array objects (VAO)
-    // or use VBOs if not possible
+    // Try binding vertex array objects (VAO) or use VBOs if not possible
+    // WARNING: UploadMesh() enables all vertex attributes available in mesh and sets default attribute values
+    // for shader expected vertex attributes that are not provided by the mesh (i.e. colors)
+    // This could be a dangerous approach because different meshes with different shaders can enable/disable some attributes
     if (!rlEnableVertexArray(mesh.vaoId))
     {
         // Bind mesh VBO data: vertex position (shader-location = 0)
@@ -1326,8 +1335,8 @@ void DrawMesh(Mesh mesh, Material material, Matrix transform)
             }
             else
             {
-                // Set default value for unused attribute
-                // NOTE: Required when using default shader and no VAO support
+                // Set default value for defined vertex attribute in shader but not provided by mesh
+                // WARNING: It could result in GPU undefined behaviour
                 float value[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
                 rlSetVertexAttributeDefault(material.shader.locs[SHADER_LOC_VERTEX_COLOR], value, SHADER_ATTRIB_VEC4, 4);
                 rlDisableVertexAttribute(material.shader.locs[SHADER_LOC_VERTEX_COLOR]);
@@ -1352,6 +1361,9 @@ void DrawMesh(Mesh mesh, Material material, Matrix transform)
 
         if (mesh.indices != NULL) rlEnableVertexBufferElement(mesh.vboId[6]);
     }
+
+    // WARNING: Disable vertex attribute color input if mesh can not provide that data (despite location being enabled in shader)
+    if (mesh.vboId[3] == 0) rlDisableVertexAttribute(material.shader.locs[SHADER_LOC_VERTEX_COLOR]);
 
     int eyeCount = 1;
     if (rlIsStereoRenderEnabled()) eyeCount = 2;
@@ -1379,14 +1391,17 @@ void DrawMesh(Mesh mesh, Material material, Matrix transform)
     // Unbind all binded texture maps
     for (int i = 0; i < MAX_MATERIAL_MAPS; i++)
     {
-        // Select current shader texture slot
-        rlActiveTextureSlot(i);
+        if (material.maps[i].texture.id > 0)
+        {
+            // Select current shader texture slot
+            rlActiveTextureSlot(i);
 
-        // Disable texture for active slot
-        if ((i == MATERIAL_MAP_IRRADIANCE) ||
-            (i == MATERIAL_MAP_PREFILTER) ||
-            (i == MATERIAL_MAP_CUBEMAP)) rlDisableTextureCubemap();
-        else rlDisableTexture();
+            // Disable texture for active slot
+            if ((i == MATERIAL_MAP_IRRADIANCE) ||
+                (i == MATERIAL_MAP_PREFILTER) ||
+                (i == MATERIAL_MAP_CUBEMAP)) rlDisableTextureCubemap();
+            else rlDisableTexture();
+        }
     }
 
     // Disable all possible vertex array objects (or VBOs)
@@ -1568,6 +1583,9 @@ void DrawMeshInstanced(Mesh mesh, Material material, const Matrix *transforms, i
         if (mesh.indices != NULL) rlEnableVertexBufferElement(mesh.vboId[6]);
     }
 
+    // WARNING: Disable vertex attribute color input if mesh can not provide that data (despite location being enabled in shader)
+    if (mesh.vboId[3] == 0) rlDisableVertexAttribute(material.shader.locs[SHADER_LOC_VERTEX_COLOR]);
+
     int eyeCount = 1;
     if (rlIsStereoRenderEnabled()) eyeCount = 2;
 
@@ -1594,14 +1612,17 @@ void DrawMeshInstanced(Mesh mesh, Material material, const Matrix *transforms, i
     // Unbind all binded texture maps
     for (int i = 0; i < MAX_MATERIAL_MAPS; i++)
     {
-        // Select current shader texture slot
-        rlActiveTextureSlot(i);
+        if (material.maps[i].texture.id > 0)
+        {
+            // Select current shader texture slot
+            rlActiveTextureSlot(i);
 
-        // Disable texture for active slot
-        if ((i == MATERIAL_MAP_IRRADIANCE) ||
-            (i == MATERIAL_MAP_PREFILTER) ||
-            (i == MATERIAL_MAP_CUBEMAP)) rlDisableTextureCubemap();
-        else rlDisableTexture();
+            // Disable texture for active slot
+            if ((i == MATERIAL_MAP_IRRADIANCE) ||
+                (i == MATERIAL_MAP_PREFILTER) ||
+                (i == MATERIAL_MAP_CUBEMAP)) rlDisableTextureCubemap();
+            else rlDisableTexture();
+        }
     }
 
     // Disable all possible vertex array objects (or VBOs)
@@ -2630,7 +2651,7 @@ Mesh GenMeshKnot(float radius, float size, int radSeg, int sides)
 // NOTE: Vertex data is uploaded to GPU
 Mesh GenMeshHeightmap(Image heightmap, Vector3 size)
 {
-    #define GRAY_VALUE(c) ((c.r+c.g+c.b)/3)
+    #define GRAY_VALUE(c) ((c.r+c.g+c.b)/3.0f)
 
     Mesh mesh = { 0 };
 
@@ -2653,8 +2674,6 @@ Mesh GenMeshHeightmap(Image heightmap, Vector3 size)
     int tcCounter = 0;      // Used to count texcoords float by float
     int nCounter = 0;       // Used to count normals float by float
 
-    int trisCounter = 0;
-
     Vector3 scaleFactor = { size.x/mapX, size.y/255.0f, size.z/mapZ };
 
     Vector3 vA = { 0 };
@@ -2671,15 +2690,15 @@ Mesh GenMeshHeightmap(Image heightmap, Vector3 size)
 
             // one triangle - 3 vertex
             mesh.vertices[vCounter] = (float)x*scaleFactor.x;
-            mesh.vertices[vCounter + 1] = (float)GRAY_VALUE(pixels[x + z*mapX])*scaleFactor.y;
+            mesh.vertices[vCounter + 1] = GRAY_VALUE(pixels[x + z*mapX])*scaleFactor.y;
             mesh.vertices[vCounter + 2] = (float)z*scaleFactor.z;
 
             mesh.vertices[vCounter + 3] = (float)x*scaleFactor.x;
-            mesh.vertices[vCounter + 4] = (float)GRAY_VALUE(pixels[x + (z + 1)*mapX])*scaleFactor.y;
+            mesh.vertices[vCounter + 4] = GRAY_VALUE(pixels[x + (z + 1)*mapX])*scaleFactor.y;
             mesh.vertices[vCounter + 5] = (float)(z + 1)*scaleFactor.z;
 
             mesh.vertices[vCounter + 6] = (float)(x + 1)*scaleFactor.x;
-            mesh.vertices[vCounter + 7] = (float)GRAY_VALUE(pixels[(x + 1) + z*mapX])*scaleFactor.y;
+            mesh.vertices[vCounter + 7] = GRAY_VALUE(pixels[(x + 1) + z*mapX])*scaleFactor.y;
             mesh.vertices[vCounter + 8] = (float)z*scaleFactor.z;
 
             // another triangle - 3 vertex
@@ -2692,7 +2711,7 @@ Mesh GenMeshHeightmap(Image heightmap, Vector3 size)
             mesh.vertices[vCounter + 14] = mesh.vertices[vCounter + 5];
 
             mesh.vertices[vCounter + 15] = (float)(x + 1)*scaleFactor.x;
-            mesh.vertices[vCounter + 16] = (float)GRAY_VALUE(pixels[(x + 1) + (z + 1)*mapX])*scaleFactor.y;
+            mesh.vertices[vCounter + 16] = GRAY_VALUE(pixels[(x + 1) + (z + 1)*mapX])*scaleFactor.y;
             mesh.vertices[vCounter + 17] = (float)(z + 1)*scaleFactor.z;
             vCounter += 18;     // 6 vertex, 18 floats
 
@@ -2749,7 +2768,6 @@ Mesh GenMeshHeightmap(Image heightmap, Vector3 size)
             }
 
             nCounter += 18;     // 6 vertex, 18 floats
-            trisCounter += 2;
         }
     }
 
@@ -3243,19 +3261,6 @@ void GenMeshTangents(Mesh *mesh)
     TRACELOG(LOG_INFO, "MESH: Tangents data computed and uploaded for provided mesh");
 }
 
-// Compute mesh binormals (aka bitangent)
-void GenMeshBinormals(Mesh *mesh)
-{
-    for (int i = 0; i < mesh->vertexCount; i++)
-    {
-        //Vector3 normal = { mesh->normals[i*3 + 0], mesh->normals[i*3 + 1], mesh->normals[i*3 + 2] };
-        //Vector3 tangent = { mesh->tangents[i*4 + 0], mesh->tangents[i*4 + 1], mesh->tangents[i*4 + 2] };
-        //Vector3 binormal = Vector3Scale(Vector3CrossProduct(normal, tangent), mesh->tangents[i*4 + 3]);
-
-        // TODO: Register computed binormal in mesh->binormal?
-    }
-}
-
 // Draw a model (with texture if set)
 void DrawModel(Model model, Vector3 position, float scale, Color tint)
 {
@@ -3284,10 +3289,10 @@ void DrawModelEx(Model model, Vector3 position, Vector3 rotationAxis, float rota
         Color color = model.materials[model.meshMaterial[i]].maps[MATERIAL_MAP_DIFFUSE].color;
 
         Color colorTint = WHITE;
-        colorTint.r = (unsigned char)((((float)color.r/255.0)*((float)tint.r/255.0))*255.0f);
-        colorTint.g = (unsigned char)((((float)color.g/255.0)*((float)tint.g/255.0))*255.0f);
-        colorTint.b = (unsigned char)((((float)color.b/255.0)*((float)tint.b/255.0))*255.0f);
-        colorTint.a = (unsigned char)((((float)color.a/255.0)*((float)tint.a/255.0))*255.0f);
+        colorTint.r = (unsigned char)((((float)color.r/255.0f)*((float)tint.r/255.0f))*255.0f);
+        colorTint.g = (unsigned char)((((float)color.g/255.0f)*((float)tint.g/255.0f))*255.0f);
+        colorTint.b = (unsigned char)((((float)color.b/255.0f)*((float)tint.b/255.0f))*255.0f);
+        colorTint.a = (unsigned char)((((float)color.a/255.0f)*((float)tint.a/255.0f))*255.0f);
 
         model.materials[model.meshMaterial[i]].maps[MATERIAL_MAP_DIFFUSE].color = colorTint;
         DrawMesh(model.meshes[i], model.materials[model.meshMaterial[i]], model.transform);
@@ -3335,7 +3340,7 @@ void DrawBillboardRec(Camera camera, Texture2D texture, Rectangle source, Vector
 void DrawBillboardPro(Camera camera, Texture2D texture, Rectangle source, Vector3 position, Vector3 up, Vector2 size, Vector2 origin, float rotation, Color tint)
 {
     // NOTE: Billboard size will maintain source rectangle aspect ratio, size will represent billboard width
-    Vector2 sizeRatio = { size.y, size.x*(float)source.height/source.width };
+    Vector2 sizeRatio = { size.x*(float)source.width/source.height, size.y };
 
     Matrix matView = MatrixLookAt(camera.position, camera.target, camera.up);
 
@@ -3396,7 +3401,7 @@ void DrawBillboardPro(Camera camera, Texture2D texture, Rectangle source, Vector
     bottomRight = Vector3Add(bottomRight, position);
     bottomLeft = Vector3Add(bottomLeft, position);
 
-    rlCheckRenderBatchLimit(4);
+    rlCheckRenderBatchLimit(8);
 
     rlSetTexture(texture.id);
 
@@ -3640,31 +3645,12 @@ RayCollision GetRayCollisionMesh(Ray ray, Mesh mesh, Matrix transform)
     return collision;
 }
 
-// Get collision info between ray and model
-RayCollision GetRayCollisionModel(Ray ray, Model model)
-{
-    RayCollision collision = { 0 };
-
-    for (int m = 0; m < model.meshCount; m++)
-    {
-        RayCollision meshHitInfo = GetRayCollisionMesh(ray, model.meshes[m], model.transform);
-
-        if (meshHitInfo.hit)
-        {
-            // Save the closest hit mesh
-            if ((!collision.hit) || (collision.distance > meshHitInfo.distance)) collision = meshHitInfo;
-        }
-    }
-
-    return collision;
-}
-
 // Get collision info between ray and triangle
 // NOTE: The points are expected to be in counter-clockwise winding
 // NOTE: Based on https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
 RayCollision GetRayCollisionTriangle(Ray ray, Vector3 p1, Vector3 p2, Vector3 p3)
 {
-    #define EPSILON 0.000001        // A small number
+    #define EPSILON 0.000001f        // A small number
 
     RayCollision collision = { 0 };
     Vector3 edge1 = { 0 };
@@ -4662,7 +4648,6 @@ static Model LoadGLTF(const char *fileName)
         // Load our model data: meshes and materials
         model.meshCount = primitivesCount;
         model.meshes = RL_CALLOC(model.meshCount, sizeof(Mesh));
-        for (int i = 0; i < model.meshCount; i++) model.meshes[i].vboId = (unsigned int*)RL_CALLOC(MAX_MESH_VERTEX_BUFFERS, sizeof(unsigned int));
 
         // NOTE: We keep an extra slot for default material, in case some mesh requires it
         model.materialCount = (int)data->materials_count + 1;
@@ -4864,7 +4849,7 @@ static Model LoadGLTF(const char *fileName)
                             LOAD_ATTRIBUTE(attribute, 4, unsigned short, temp);
 
                             // Convert data to raylib color data type (4 bytes)
-                            for (int c = 0; c < attribute->count*4; c++) model.meshes[meshIndex].colors[c] = (unsigned char)(((float)temp[c]/65535.0f)*255.0f);
+                            for (unsigned int c = 0; c < attribute->count*4; c++) model.meshes[meshIndex].colors[c] = (unsigned char)(((float)temp[c]/65535.0f)*255.0f);
 
                             RL_FREE(temp);
                         }
@@ -4878,7 +4863,7 @@ static Model LoadGLTF(const char *fileName)
                             LOAD_ATTRIBUTE(attribute, 4, float, temp);
 
                             // Convert data to raylib color data type (4 bytes), we expect the color data normalized
-                            for (int c = 0; c < attribute->count*4; c++) model.meshes[meshIndex].colors[c] = (unsigned char)(temp[c]*255.0f);
+                            for (unsigned int c = 0; c < attribute->count*4; c++) model.meshes[meshIndex].colors[c] = (unsigned char)(temp[c]*255.0f);
 
                             RL_FREE(temp);
                         }
@@ -4913,7 +4898,7 @@ static Model LoadGLTF(const char *fileName)
                         LOAD_ATTRIBUTE(attribute, 1, unsigned int, temp);
 
                         // Convert data to raylib indices data type (unsigned short)
-                        for (int d = 0; d < attribute->count; d++) model.meshes[meshIndex].indices[d] = (unsigned short)temp[d];
+                        for (unsigned int d = 0; d < attribute->count; d++) model.meshes[meshIndex].indices[d] = (unsigned short)temp[d];
 
                         TRACELOG(LOG_WARNING, "MODEL: [%s] Indices data converted from u32 to u16, possible loss of data", fileName);
 
@@ -4925,7 +4910,7 @@ static Model LoadGLTF(const char *fileName)
 
                 // Assign to the primitive mesh the corresponding material index
                 // NOTE: If no material defined, mesh uses the already assigned default material (index: 0)
-                for (int m = 0; m < data->materials_count; m++)
+                for (unsigned int m = 0; m < data->materials_count; m++)
                 {
                     // The primitive actually keeps the pointer to the corresponding material,
                     // raylib instead assigns to the mesh the by its index, as loaded in model.materials array
@@ -4968,6 +4953,10 @@ static Model LoadGLTF(const char *fileName)
                             model.meshes[meshIndex].boneIds = RL_CALLOC(model.meshes[meshIndex].vertexCount*4, sizeof(unsigned char));
 
                             // Load 4 components of unsigned char data type into mesh.boneIds
+                            // TODO: It seems LOAD_ATTRIBUTE() macro does not work as expected in some cases,
+                            // for cgltf_attribute_type_joints we have:
+                            //   - data.meshes[0] (256 vertices)
+                            //   - 256 values, provided as cgltf_type_vec4 of bytes (4 byte per joint, stride 4)
                             LOAD_ATTRIBUTE(attribute, 4, unsigned char, model.meshes[meshIndex].boneIds)
                         }
                         else TRACELOG(LOG_WARNING, "MODEL: [%s] Joint attribute data format not supported, use vec4 u8", fileName);
@@ -4982,6 +4971,9 @@ static Model LoadGLTF(const char *fileName)
                             model.meshes[meshIndex].boneWeights = RL_CALLOC(model.meshes[meshIndex].vertexCount*4, sizeof(float));
 
                             // Load 4 components of float data type into mesh.boneWeights
+                            // for cgltf_attribute_type_weights we have:
+                            //   - data.meshes[0] (256 vertices)
+                            //   - 256 values, provided as cgltf_type_vec4 of float (4 byte per joint, stride 16)
                             LOAD_ATTRIBUTE(attribute, 4, float, model.meshes[meshIndex].boneWeights)
                         }
                         else TRACELOG(LOG_WARNING, "MODEL: [%s] Joint weight attribute data format not supported, use vec4 float", fileName);

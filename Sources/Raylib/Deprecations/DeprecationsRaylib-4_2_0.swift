@@ -6,7 +6,7 @@
  * http://stregasgate.com
  */
 
-// This file contains deprecations for SwiftRaylib from Raylib 3.7 to 4.0
+// This file contains deprecations for SwiftRaylib from Raylib 3.7 to 4.2
 // Swift will guide you through upgrading, and this file contains the hints it needs to do so.
 
 import _RaylibC
@@ -56,6 +56,13 @@ public extension Raylib {
         fatalError()
     }
     
+    /// Get collision info between ray and model
+    @available(*, unavailable, message: "Removed in Raylib 4.2.0")
+    @inlinable
+    static func getRayCollisionModel(_ ray: Ray, _ model: Model) -> RayCollision {
+        fatalError()
+    }
+    
     /// Get collision info between ray and triangle
     @available(*, unavailable, renamed: "getRayCollisionTriangle()")
     @inlinable
@@ -85,10 +92,17 @@ public extension Raylib {
     }
     
     /// Compute mesh binormals
-    @available(*, deprecated, renamed: "genMeshBinormals()")
+    @available(*, deprecated, message: "Removed in Raylib 4.2.0")
     @inlinable
     static func meshBinormals(_ mesh: inout Mesh) {
-        _RaylibC.GenMeshBinormals(&mesh)
+        fatalError()
+    }
+    
+    /// Compute mesh binormals
+    /// @available(*, deprecated, message: "Removed in Raylib 4.2.0")
+    @inlinable
+    static func genMeshBinormals(_ mesh: inout Mesh) {
+        fatalError()
     }
     
     /// Detect collision between ray and sphere
@@ -216,6 +230,14 @@ public func max(_ v1: Vector3, _ v2: Vector3) -> Vector3 {
     return _RaylibC.Vector3Max(v1, v2)
 }
 
+/// Normalize provided matrix
+@available(*, unavailable, message: "Removed in Raylin 4.2.0")
+@inlinable
+var normalized: Matrix {
+    fatalError()
+}
+
+
 
 //MARK: - Raylib_h_audio.swift
 public extension Raylib {
@@ -260,5 +282,47 @@ public extension Raylib {
     @inlinable
     static func getTouchPointsCount() -> Int32 {
         return _RaylibC.GetTouchPointCount()
+    }
+    
+    /// Get filenames in a directory path (memory should be freed)
+    @available(*, unavailable, renamed: "loadDirectoryFiles()")
+    @inlinable
+    static func getDirectoryFiles(_ dirPath: String) -> [String] {
+        fatalError()
+    }
+    
+    /// Clear directory files paths buffers (free memory)
+    @available(*, unavailable, renamed: "unloadDirectoryFiles()")
+    @inlinable
+    static func clearDirectoryFiles() {
+        fatalError()
+    }
+    
+    /// Get dropped files names (memory should be freed)
+    @available(*, unavailable, renamed: "loadDroppedFiles()")
+    @inlinable
+    static func getDroppedFiles() -> [String] {
+        fatalError()
+    }
+    
+    /// Clear dropped files paths buffer (free memory)
+    @available(*, unavailable, renamed: "unloadDroppedFiles()")
+    @inlinable
+    static func clearDroppedFiles() {
+        fatalError()
+    }
+    
+    /// Save integer value to storage file (to defined position), returns true on success
+    @available(*, unavailable, message: "Removed in Raylib 4.2.0")
+    @inlinable
+    static func saveStorageValue(_ position: UInt32, _ value: Int32) -> Bool {
+        fatalError()
+    }
+    
+    /// Load integer value from storage file (from defined position)
+    @available(*, unavailable, message: "Removed in Raylib 4.2.0")
+    @inlinable
+    static func loadStorageValue(_ position: UInt32) -> Int32 {
+        fatalError()
     }
 }

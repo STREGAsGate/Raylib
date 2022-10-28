@@ -25,7 +25,7 @@
 *
 *   DEPENDENCIES:
 *       stb_truetype  - Load TTF file and rasterize characters data
-*       stb_rect_pack - Rectangles packing algorythms, required for font atlas generation
+*       stb_rect_pack - Rectangles packing algorithms, required for font atlas generation
 *
 *
 *   LICENSE: zlib/libpng
@@ -229,7 +229,7 @@ extern void LoadFontDefault(void)
     //------------------------------------------------------------------------------
 
     // Allocate space for our characters info data
-    // NOTE: This memory should be freed at end! --> CloseWindow()
+    // NOTE: This memory must be freed at end! --> Done by CloseWindow()
     defaultFont.glyphs = (GlyphInfo *)RL_MALLOC(defaultFont.glyphCount*sizeof(GlyphInfo));
     defaultFont.recs = (Rectangle *)RL_MALLOC(defaultFont.glyphCount*sizeof(Rectangle));
 
@@ -334,7 +334,11 @@ Font LoadFont(const char *fileName)
         TRACELOG(LOG_WARNING, "FONT: [%s] Failed to load font texture -> Using default font", fileName);
         font = GetFontDefault();
     }
-    else SetTextureFilter(font.texture, TEXTURE_FILTER_POINT);    // By default we set point filter (best performance)
+    else
+    {
+        SetTextureFilter(font.texture, TEXTURE_FILTER_POINT);    // By default we set point filter (best performance)
+        TRACELOG(LOG_INFO, "FONT: Data loaded successfully (%i pixel size | %i glyphs)", FONT_TTF_DEFAULT_SIZE, FONT_TTF_DEFAULT_NUMCHARS);
+    }
 
     return font;
 }
@@ -520,7 +524,7 @@ Font LoadFontFromMemory(const char *fileType, const unsigned char *fileData, int
 
             UnloadImage(atlas);
 
-            // TRACELOG(LOG_INFO, "FONT: Font loaded successfully (%i glyphs)", font.glyphCount);
+            TRACELOG(LOG_INFO, "FONT: Data loaded successfully (%i pixel size | %i glyphs)", font.baseSize, font.glyphCount);
         }
         else font = GetFontDefault();
     }
@@ -682,20 +686,20 @@ Image GenImageFontAtlas(const GlyphInfo *chars, Rectangle **charRecs, int glyphC
     // NOTE 2: SDF font characters already contain an internal padding,
     // so image size would result bigger than default font type
     float requiredArea = 0;
-    for (int i = 0; i < glyphCount; i++) requiredArea += ((chars[i].image.width + 2*padding)*(chars[i].image.height + 2*padding));
-    float guessSize = sqrtf(requiredArea)*1.3f;
-    int imageSize = (int)powf(2, ceilf(logf((float)guessSize)/logf(2)));  // Calculate next POT
+    for (int i = 0; i < glyphCount; i++) requiredArea += ((chars[i].image.width + 2*padding)*(fontSize + 2*padding));
+    float guessSize = sqrtf(requiredArea)*1.4f;
+    int imageSize = (int)powf(2, ceilf(logf((float)guessSize)/logf(2)));    // Calculate next POT
 
     atlas.width = imageSize;   // Atlas bitmap width
     atlas.height = imageSize;  // Atlas bitmap height
-    atlas.data = (unsigned char *)RL_CALLOC(1, atlas.width*atlas.height);      // Create a bitmap to store characters (8 bpp)
+    atlas.data = (unsigned char *)RL_CALLOC(1, atlas.width*atlas.height);   // Create a bitmap to store characters (8 bpp)
     atlas.format = PIXELFORMAT_UNCOMPRESSED_GRAYSCALE;
     atlas.mipmaps = 1;
 
     // DEBUG: We can see padding in the generated image setting a gray background...
     //for (int i = 0; i < atlas.width*atlas.height; i++) ((unsigned char *)atlas.data)[i] = 100;
 
-    if (packMethod == 0)   // Use basic packing algorythm
+    if (packMethod == 0)   // Use basic packing algorithm
     {
         int offsetX = padding;
         int offsetY = padding;
@@ -730,11 +734,23 @@ Image GenImageFontAtlas(const GlyphInfo *chars, Rectangle **charRecs, int glyphC
                 // height is bigger than fontSize, it could be up to (fontSize + 8)
                 offsetY += (fontSize + 2*padding);
 
-                if (offsetY > (atlas.height - fontSize - padding)) break;
+                if (offsetY > (atlas.height - fontSize - padding))
+                {
+                    for(int j = i + 1; j < glyphCount; j++)
+                    {
+                        TRACELOG(LOG_WARNING, "FONT: Failed to package character (%i)", j);
+                        // make sure remaining recs contain valid data
+                        recs[j].x = 0;
+                        recs[j].y = 0;
+                        recs[j].width = 0;
+                        recs[j].height = 0;
+                    }
+                    break;
+                }
             }
         }
     }
-    else if (packMethod == 1)  // Use Skyline rect packing algorythm (stb_pack_rect)
+    else if (packMethod == 1)  // Use Skyline rect packing algorithm (stb_pack_rect)
     {
         stbrp_context *context = (stbrp_context *)RL_MALLOC(sizeof(*context));
         stbrp_node *nodes = (stbrp_node *)RL_MALLOC(glyphCount*sizeof(*nodes));
@@ -923,7 +939,7 @@ bool ExportFontAsCode(Font font, const char *fileName)
     byteCount += sprintf(txtData + byteCount, "    Font font = { 0 };\n\n");
     byteCount += sprintf(txtData + byteCount, "    font.baseSize = %i;\n", font.baseSize);
     byteCount += sprintf(txtData + byteCount, "    font.glyphCount = %i;\n", font.glyphCount);
-    byteCount += sprintf(txtData + byteCount, "    font.glyphPadding = %i;\n\n", FONT_TTF_DEFAULT_CHARS_PADDING);
+    byteCount += sprintf(txtData + byteCount, "    font.glyphPadding = %i;\n\n", font.glyphPadding);
     byteCount += sprintf(txtData + byteCount, "    // Custom font loading\n");
 #if defined(SUPPORT_COMPRESSED_FONT_ATLAS)
     byteCount += sprintf(txtData + byteCount, "    // NOTE: Compressed font image data (DEFLATE), it requires DecompressData() function\n");
@@ -980,11 +996,11 @@ bool ExportFontAsCode(Font font, const char *fileName)
 // NOTE: Uses default font
 void DrawFPS(int posX, int posY)
 {
-    Color color = LIME; // good fps
+    Color color = LIME;                         // Good FPS
     int fps = GetFPS();
 
-    if (fps < 30 && fps >= 15) color = ORANGE;  // warning FPS
-    else if (fps < 15) color = RED;    // bad FPS
+    if ((fps < 30) && (fps >= 15)) color = ORANGE;  // Warning FPS
+    else if (fps < 15) color = RED;             // Low FPS
 
     DrawText(TextFormat("%2i FPS", GetFPS()), posX, posY, 20, color);
 }
@@ -1035,7 +1051,7 @@ void DrawTextEx(Font font, const char *text, Vector2 position, float fontSize, f
         {
             // NOTE: Fixed line spacing of 1.5 line-height
             // TODO: Support custom line spacing defined by user
-            textOffsetY += (int)((font.baseSize + font.baseSize/2)*scaleFactor);
+            textOffsetY += (int)((font.baseSize + font.baseSize/2.0f)*scaleFactor);
             textOffsetX = 0.0f;
         }
         else
@@ -1077,8 +1093,8 @@ void DrawTextCodepoint(Font font, int codepoint, Vector2 position, float fontSiz
 
     // Character destination rectangle on screen
     // NOTE: We consider glyphPadding on drawing
-    Rectangle dstRec = { (int)position.x + font.glyphs[index].offsetX*scaleFactor - (float)font.glyphPadding*scaleFactor,
-                      (int)position.y + font.glyphs[index].offsetY*scaleFactor - (float)font.glyphPadding*scaleFactor,
+    Rectangle dstRec = { position.x + font.glyphs[index].offsetX*scaleFactor - (float)font.glyphPadding*scaleFactor,
+                      position.y + font.glyphs[index].offsetY*scaleFactor - (float)font.glyphPadding*scaleFactor,
                       (font.recs[index].width + 2.0f*font.glyphPadding)*scaleFactor,
                       (font.recs[index].height + 2.0f*font.glyphPadding)*scaleFactor };
 
@@ -1107,7 +1123,7 @@ void DrawTextCodepoints(Font font, const int *codepoints, int count, Vector2 pos
         {
             // NOTE: Fixed line spacing of 1.5 line-height
             // TODO: Support custom line spacing defined by user
-            textOffsetY += (int)((font.baseSize + font.baseSize/2)*scaleFactor);
+            textOffsetY += (int)((font.baseSize + font.baseSize/2.0f)*scaleFactor);
             textOffsetX = 0.0f;
         }
         else
@@ -1371,7 +1387,7 @@ const char *TextSubtext(const char *text, int position, int length)
 
 // Replace text string
 // REQUIRES: strlen(), strstr(), strncpy(), strcpy()
-// WARNING: Returned buffer must be freed by the user (if return != NULL)
+// WARNING: Allocated memory must be manually freed
 char *TextReplace(char *text, const char *replace, const char *by)
 {
     // Sanity checks and initialization
@@ -1420,7 +1436,7 @@ char *TextReplace(char *text, const char *replace, const char *by)
 }
 
 // Insert text in a specific position, moves all text forward
-// WARNING: Allocated memory should be manually freed
+// WARNING: Allocated memory must be manually freed
 char *TextInsert(const char *text, const char *insert, int position)
 {
     int textLen = TextLength(text);
@@ -1604,7 +1620,7 @@ const char *TextToPascal(const char *text)
 
 // Encode text codepoint into UTF-8 text
 // REQUIRES: memcpy()
-// WARNING: Allocated memory should be manually freed
+// WARNING: Allocated memory must be manually freed
 char *TextCodepointsToUTF8(const int *codepoints, int length)
 {
     // We allocate enough memory fo fit all possible codepoints

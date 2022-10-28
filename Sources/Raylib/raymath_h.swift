@@ -33,6 +33,18 @@ public extension Raylib {
     static func remap(_ value: Float, _ inputStart: Float, _ inputEnd: Float, _ outputStart: Float, _ outputEnd: Float) -> Float {
         return _RaylibC.Remap(value, inputStart, inputEnd, outputStart, outputEnd)
     }
+    
+    /// Wrap input value from min to max
+    @inlinable
+    static func wrap(_ value: Float, _ min: Float, _ max: Float) -> Float {
+        return _RaylibC.Wrap(value, min, max)
+    }
+    
+    /// Check whether two given floats are almost equal
+    @inlinable
+    static func floatEquals(_ x: Float, _ y: Float) -> Int32 {
+        return _RaylibC.FloatEquals(x, y)
+    }
 }
 
 //MARK: - Module Functions Definition - Vector2 math
@@ -97,6 +109,12 @@ public extension Vector2 {
         return _RaylibC.Vector2Distance(self, v2)
     }
     
+    /// Calculate square distance between two vectors
+    @inlinable
+    func distanceSqr(_ v2: Vector2) -> Float {
+        return _RaylibC.Vector2DistanceSqr(self, v2)
+    }
+    
     /// Calculate angle from two vectors in X-axis
     @inlinable
     func angle(_ v2: Vector2) -> Float {
@@ -155,6 +173,31 @@ public extension Vector2 {
     @inlinable
     func moveTowards(_ target: Vector2, _ maxDistance: Float) -> Vector2 {
         return _RaylibC.Vector2MoveTowards(self, target, maxDistance)
+    }
+    
+    /// Invert the given vector
+    @inlinable
+    func invert() -> Vector2 {
+        return _RaylibC.Vector2Invert(self)
+    }
+    
+    /// Clamp the components of the vector between
+    /// min and max values specified by the given vectors
+    @inlinable
+    func clamp(_ min: Vector2, _ max: Vector2) -> Vector2 {
+        return _RaylibC.Vector2Clamp(self, min, max)
+    }
+    
+    /// Clamp the magnitude of the vector between two min and max values
+    @inlinable
+    func clampValue(_ min: Float, _ max: Float) -> Vector2 {
+        return _RaylibC.Vector2ClampValue(self, min, max)
+    }
+    
+    // Check whether two given vectors are almost equal
+    @inlinable
+    func equals(_ q: Vector2) -> Int32 {
+        return _RaylibC.Vector2Equals(self, q)
     }
 }
 
@@ -245,6 +288,13 @@ public extension Vector3 {
         return _RaylibC.Vector3Distance(self, v2)
     }
     
+    /// Calculate square distance between two vectors
+    
+    @inlinable
+    func distanceSqr(_ v2: Vector3) -> Float {
+        return _RaylibC.Vector3DistanceSqr(self, v2)
+    }
+    
     // Negate provided vector (invert direction)
     @inlinable
     static prefix func -(_ v: Vector3) -> Vector3 {
@@ -283,6 +333,12 @@ public extension Vector3 {
     @inlinable
     func rotate(by q: Quaternion) -> Vector3 {
         return _RaylibC.Vector3RotateByQuaternion(self, q)
+    }
+    
+    /// Rotates a vector around an axis
+    @inlinable
+    func rotate(by axis: Vector3, angle: Float) -> Vector3 {
+        return _RaylibC.Vector3RotateByAxisAngle(self, axis, angle)
     }
     
     /// Calculate linear interpolation between two vectors
@@ -325,6 +381,42 @@ public extension Vector3 {
     func toFloatV() -> float3 {
         return _RaylibC.Vector3ToFloatV(self)
     }
+    
+    /// Invert the given vector
+    @inlinable
+    func invert() -> Vector3 {
+        return _RaylibC.Vector3Invert(self)
+    }
+    
+    /// Clamp the components of the vector between
+    /// min and max values specified by the given vectors
+    @inlinable
+    func clamp(_ min: Vector3, _ max: Vector3) -> Vector3 {
+        return _RaylibC.Vector3Clamp(self, min, max)
+    }
+    
+    /// Clamp the magnitude of the vector between two values
+    @inlinable
+    func clampValue(_ min: Float, _ max: Float) -> Vector3 {
+        return _RaylibC.Vector3ClampValue(self, min, max)
+    }
+    
+    /// Check whether two given vectors are almost equal
+    @inlinable
+    func equals(_ q: Vector3) -> Int32 {
+        return _RaylibC.Vector3Equals(self, q)
+    }
+    
+    // Compute the direction of a refracted ray where v specifies the
+    // normalized direction of the incoming ray, n specifies the
+    // normalized normal vector of the interface of two optical media,
+    // and r specifies the ratio of the refractive index of the medium
+    // from where the ray comes to the refractive index of the medium
+    // on the other side of the surface
+    @inlinable
+    func refract(_ n: Vector3, _ r: Float) -> Vector3 {
+        return _RaylibC.Vector3Refract(self, n, r)
+    }
 }
 
 //MARK: - Module Functions Definition - Matrix math
@@ -358,12 +450,6 @@ public extension Matrix {
     // Cache the matrix values (speed optimization)
     
     // Calculate the invert determinant (inlined to avoid double-caching)
-    
-    /// Normalize provided matrix
-    @inlinable
-    var normalized: Matrix {
-        return _RaylibC.MatrixNormalize(self)
-    }
     
     /// Returns identity matrix
     @inlinable
@@ -403,31 +489,36 @@ public extension Matrix {
         self = _RaylibC.MatrixRotate(axis, angle)
     }
     
-    /// Returns x-rotation matrix (angle in radians)
+    /// Get x-rotation matrix
+    /// - note: Angle must be provided in radians
     @inlinable
     init(xAngle: Float) {
         self = _RaylibC.MatrixRotateX(xAngle)
     }
     
-    /// Returns y-rotation matrix (angle in radians)
+    /// Get y-rotation matrix
+    /// - note: Angle must be provided in radians
     @inlinable
     init(yAngle: Float) {
         self = _RaylibC.MatrixRotateY(yAngle)
     }
     
-    /// Returns z-rotation matrix (angle in radians)
+    /// Get z-rotation matrix
+    /// - note: Angle must be provided in radians
     @inlinable
     init(zAngle: Float) {
         self = _RaylibC.MatrixRotateZ(zAngle)
     }
     
-    /// Returns xyz-rotation matrix (angles in radians)
+    /// Get xyz-rotation matrix
+    /// - note: Angle must be provided in radians
     @inlinable
     init(xyzAngle: Vector3) {
         self = _RaylibC.MatrixRotateXYZ(xyzAngle)
     }
     
-    /// Returns zyx-rotation matrix (angles in radians)
+    /// Get zyx-rotation matrix
+    /// - note: Angle must be provided in radians
     @inlinable
     init(zyxAngle: Vector3) {
         self = _RaylibC.MatrixRotateZYX(zyxAngle)
@@ -446,7 +537,7 @@ public extension Matrix {
     }
     
     /// Returns perspective projection matrix
-    /// - note: Angle should be provided in radians
+    /// - note: Fovy angle must be provided in radians
     @inlinable
     init(perspectiveFovY fovy: Double, aspect: Double, near: Double, far: Double) {
         self = _RaylibC.MatrixPerspective(fovy, aspect, near, far)
@@ -583,7 +674,7 @@ public extension Quaternion {
     }
     
     /// Returns rotation quaternion for an angle and axis
-    /// - note: angle must be provided in radians
+    /// - note: Angle must be provided in radians
     @inlinable
     init(axis: Vector3, angle: Float) {
         self = _RaylibC.QuaternionFromAxisAngle(axis, angle)
@@ -616,6 +707,12 @@ public extension Quaternion {
     @inlinable
     func transform(_ mat: Matrix) -> Quaternion {
         return _RaylibC.QuaternionTransform(self, mat)
+    }
+    
+    /// Check whether two given quaternions are almost equal
+    @inlinable
+    func equals(_ q: Quaternion) -> Int32 {
+        return _RaylibC.QuaternionEquals(self, q)
     }
 }
 

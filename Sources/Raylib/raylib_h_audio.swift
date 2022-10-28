@@ -405,4 +405,22 @@ public extension Raylib {
     static func setAudioStreamBufferSizeDefault(_ size: Int32) {
         _RaylibC.SetAudioStreamBufferSizeDefault(size)
     }
+    
+    /// Audio thread callback to request new data
+    @inlinable
+    static func setAudioStreamCallback(_ stream: AudioStream, _ callback: @escaping AudioCallback) {
+        _RaylibC.SetAudioStreamCallback(stream, callback)
+    }
+    
+    /// Attach audio stream processor to stream
+    @inlinable
+    static func attachAudioStreamProcessor(_ stream: AudioStream, _ processor: @escaping AudioCallback) {
+        _RaylibC.AttachAudioStreamProcessor(stream, processor)
+    }
+    
+    /// Detach audio stream processor from stream
+    @inlinable
+    static func detachAudioStreamProcessor(_ stream: AudioStream, _ processor: @escaping AudioCallback) {
+        _RaylibC.DetachAudioStreamProcessor(stream, processor)
+    }
 }

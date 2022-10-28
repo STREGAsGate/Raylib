@@ -292,12 +292,6 @@ public extension Raylib {
     static func genMeshTangents(_ mesh: inout Mesh) {
         _RaylibC.GenMeshTangents(&mesh)
     }
-    
-    /// Compute mesh binormals
-    @inlinable
-    static func genMeshBinormals(_ mesh: inout Mesh) {
-        _RaylibC.GenMeshBinormals(&mesh)
-    }
 }
 
 //MARK: - Mesh generation functions
@@ -497,12 +491,6 @@ public extension Raylib {
     @inlinable
     static func getRayCollisionBox(_ ray: Ray, _ box: BoundingBox) -> RayCollision {
         return _RaylibC.GetRayCollisionBox(ray, box)
-    }
-    
-    /// Get collision info between ray and model
-    @inlinable
-    static func getRayCollisionModel(_ ray: Ray, _ model: Model) -> RayCollision {
-        return _RaylibC.GetRayCollisionModel(ray, model)
     }
     
     /// Get collision info between ray and mesh
