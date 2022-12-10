@@ -262,3 +262,19 @@ public extension Raylib {
         return _RaylibC.GetTouchPointCount()
     }
 }
+
+
+//MARK: - raygui_h.swift
+public extension Raylib {
+    @available(*, deprecated, renamed: "isGuiLocked")
+    @inlinable
+    static func guiIsLocked() -> Bool {
+        fatalError()
+    }
+    
+    @available(*, deprecated, renamed: "guiState")
+    @inlinable
+    static func guiGetState() -> Bool {
+        fatalError()
+    }
+}

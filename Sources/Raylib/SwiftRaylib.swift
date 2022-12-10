@@ -128,7 +128,7 @@ import _RaylibC
 @_exported import class Foundation.Bundle
 #endif
 
-public struct Raylib {
+public enum Raylib {
     @inlinable
     public static var raylibVersion: String {
         return RAYLIB_VERSION

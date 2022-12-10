@@ -1,13 +1,18 @@
 // swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
+/// `UnmodifiedRaylibSrc` contains a copy and paste of the original source folder with no changes.
+/// `ModifiedRaylibSrc` contains only changed files in the same directory structure as `UnmodifiedRaylibSrc`.
+/// `_swifty` suffix on public headers indicate that the file contains clang attributes for swift.
+
 import PackageDescription
 
 var cSettings: [CSetting] {
     var array: [CSetting] = []
-        
+    
     array.append(.define("PLATFORM_DESKTOP", .when(platforms: [.macOS, .windows, .linux])))
     array.append(.define("SUPPORT_DEFAULT_FONT"))
+    array.append(.define("RAYGUI_IMPLEMENTATION"))
     array.append(.define("_DEBUG", .when(configuration: .debug)))
     
     // Windows
@@ -22,7 +27,7 @@ var cSettings: [CSetting] {
     // macOS
     array.append(.define("HOST_PLATFORM_OS", to: "OSX", .when(platforms: [.macOS])))
     array.append(.define("_GLFW_COCOA", .when(platforms: [.macOS])))
-
+    
     array.append(.headerSearchPath("UnmodifiedRaylibSrc/external/glfw/include"))
     array.append(.headerSearchPath("UnmodifiedRaylibSrc"))
     
@@ -36,10 +41,15 @@ var sources: [String] {
     let raylib = ["rcore.c", "rmodels.c", "raudio.c", "rshapes.c", "rtext.c", "rtextures.c", "utils.c"]
     array.append(contentsOf: raylib.map({"UnmodifiedRaylibSrc/" + $0}))
     
+    // --- Modified ----
+    //Copy of raygui.h, no source code changes. Needed for implimentations. The Makefile made this copy at build time.
+    array.append("ModifiedRaylibSrc/extras/raygui.c")
+    
     // GLFW Common
     let glfw = ["context.c", "init.c", "input.c", "monitor.c", "vulkan.c", "window.c"]
     array.append(contentsOf: glfw.map({"UnmodifiedRaylibSrc/external/glfw/src/" + $0}))
 #if os(macOS)
+    // Changes source to support ARC. Was needed to remove the no-arc unsafe build flag. Was needed to allow git tags for dependencies in projects.
     let macOSModified = ["cocoa_init.m", "cocoa_window.m", "nsgl_context.m"]
     array.append(contentsOf: macOSModified.map({"ModifiedRaylibSrc/external/glfw/src/" + $0}))
 #endif
