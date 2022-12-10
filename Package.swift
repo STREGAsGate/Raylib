@@ -71,6 +71,14 @@ var sources: [String] {
     return array
 }
 
+var swiftVersions: [SwiftVersion] {
+    #if os(Windows) //Windows rapidly changes. Make sure you have the latest toolchain installed.
+    return [.version("5.7")]
+    #else
+    return [.v5]
+    #endif
+}
+
 let package = Package(
     name: "Raylib",
     products: [
@@ -82,6 +90,7 @@ let package = Package(
         .target(name: "Raylib", dependencies: ["_RaylibC"]),
         .target(name: "_RaylibC", exclude: exclude, sources: sources, publicHeadersPath: "Include", cSettings: cSettings),
     ],
+    swiftLanguageVersions: swiftVersions,
     cLanguageStandard: .c99
 )
 
