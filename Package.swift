@@ -1,5 +1,4 @@
-// swift-tools-version:5.3
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// swift-tools-version:5.7
 
 /// `UnmodifiedRaylibSrc` contains a copy and paste of the original source folder with no changes.
 /// `ModifiedRaylibSrc` contains only changed files in the same directory structure as `UnmodifiedRaylibSrc`.
@@ -71,14 +70,6 @@ var sources: [String] {
     return array
 }
 
-var swiftVersions: [SwiftVersion] {
-    #if os(Windows) //Windows rapidly changes. Make sure you have the latest toolchain installed.
-    return [.version("5.7")]
-    #else
-    return [.v5]
-    #endif
-}
-
 let package = Package(
     name: "Raylib",
     products: [
@@ -90,7 +81,6 @@ let package = Package(
         .target(name: "Raylib", dependencies: ["_RaylibC"]),
         .target(name: "_RaylibC", exclude: exclude, sources: sources, publicHeadersPath: "Include", cSettings: cSettings),
     ],
-    swiftLanguageVersions: swiftVersions,
     cLanguageStandard: .c99
 )
 
