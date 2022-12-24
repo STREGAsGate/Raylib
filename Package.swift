@@ -17,6 +17,7 @@ var cSettings: [CSetting] {
     // Windows
     array.append(.define("HOST_PLATFORM_OS", to: "WINDOWS", .when(platforms: [.windows])))
     array.append(.define("_GLFW_WIN32", .when(platforms: [.windows])))
+    array.append(.define("_CRT_SECURE_NO_WARNINGS", .when(platforms: [.windows]))) // Silence warnings
     
     // Linux
     array.append(.define("HOST_PLATFORM_OS", to: "LINUX", .when(platforms: [.linux])))
