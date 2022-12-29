@@ -6,7 +6,7 @@
  * http://stregasgate.com
  */
 
-import _RaylibC
+import RaylibC
 
 //------------------------------------------------------------------------------------
 // Font Loading and Text Drawing Functions (Module: text)
@@ -16,14 +16,14 @@ public extension Raylib {
     /// Get the default Font
     @inlinable
     static func getFontDefault() -> Font {
-        return _RaylibC.GetFontDefault()
+        return RaylibC.GetFontDefault()
     }
     
     /// Load font from file into GPU memory (VRAM)
     @inlinable
     static func loadFont(_ fileName: String) -> Font {
         fileName.withCString { cString in
-            _RaylibC.LoadFont(cString)
+            RaylibC.LoadFont(cString)
         }
     }
     
@@ -32,11 +32,11 @@ public extension Raylib {
     static func loadFontEx(_ fileName: String, _ fontSize: Int32, _ fontChars: [Character]? = nil) -> Font {
         return fileName.withCString { cString in
             if fontChars == nil {
-                return _RaylibC.LoadFontEx(cString, fontSize, nil, 0)
+                return RaylibC.LoadFontEx(cString, fontSize, nil, 0)
             } else {
                 var chars: [Int32] = fontChars!.compactMap({$0.utf8.first}).map({Int32($0)})
                 return chars.withUnsafeMutableBufferPointer { bufferPointer in
-                    return _RaylibC.LoadFontEx(cString, fontSize, bufferPointer.baseAddress, Int32(bufferPointer.count))
+                    return RaylibC.LoadFontEx(cString, fontSize, bufferPointer.baseAddress, Int32(bufferPointer.count))
                 }
             }
         }
@@ -45,7 +45,7 @@ public extension Raylib {
     /// Load font from Image (XNA style)
     @inlinable
     static func loadFontFromImage(_ image: Image, _ key: Color, _ firstChar: Int32) -> Font {
-        return _RaylibC.LoadFontFromImage(image, key, firstChar)
+        return RaylibC.LoadFontFromImage(image, key, firstChar)
     }
     
     /// Load font from memory buffer, fileType refers to extension: i.e. ".ttf"
@@ -54,7 +54,7 @@ public extension Raylib {
         return fileType.withCString { fileCString in
             var chars = fontChars
             return chars.withUnsafeMutableBufferPointer { charBytes in
-                return _RaylibC.LoadFontFromMemory(fileCString, fileData, dataSize, fontSize, charBytes.baseAddress, Int32(fontChars.count))
+                return RaylibC.LoadFontFromMemory(fileCString, fileData, dataSize, fontSize, charBytes.baseAddress, Int32(fontChars.count))
             }
         }
     }
@@ -64,7 +64,7 @@ public extension Raylib {
     static func loadFontData(_ fileData: UnsafePointer<UInt8>!, _ dataSize: Int32, _ fontSize: Int32, _ fontChars: [Int32], _ type: FontType) -> [GlyphInfo] {
         var chars = fontChars
         return chars.withUnsafeMutableBufferPointer { charBytes in
-            let v = _RaylibC.LoadFontData(fileData, dataSize, fontSize, charBytes.baseAddress, Int32(charBytes.count), type.rawValue)
+            let v = RaylibC.LoadFontData(fileData, dataSize, fontSize, charBytes.baseAddress, Int32(charBytes.count), type.rawValue)
             return Array(UnsafeBufferPointer(start: v, count: fontChars.count))
         }
     }
@@ -80,14 +80,14 @@ public extension Raylib {
     static func unloadFontData(_ chars: [GlyphInfo]) {
         var chars = chars
         chars.withUnsafeMutableBufferPointer { bufferPointer in
-            _RaylibC.UnloadFontData(bufferPointer.baseAddress, Int32(bufferPointer.count))
+            RaylibC.UnloadFontData(bufferPointer.baseAddress, Int32(bufferPointer.count))
         }
     }
     
     /// Unload Font from GPU memory (VRAM)
     @inlinable
     static func unloadFont(_ font: Font) {
-        _RaylibC.UnloadFont(font)
+        RaylibC.UnloadFont(font)
     }
 }
 
@@ -97,14 +97,14 @@ public extension Raylib {
     /// Draw current FPS
     @inlinable
     static func drawFPS(_ posX: Int32, _ posY: Int32) {
-        _RaylibC.DrawFPS(posX, posY)
+        RaylibC.DrawFPS(posX, posY)
     }
     
     /// Draw text (using default font)
     @inlinable
     static func drawText(_ text: String, _ posX: Int32, _ posY: Int32, _ fontSize: Int32, _ color: Color) {
         text.withCString { cString in
-            _RaylibC.DrawText(cString, posX, posY, fontSize, color)
+            RaylibC.DrawText(cString, posX, posY, fontSize, color)
         }
     }
     
@@ -112,7 +112,7 @@ public extension Raylib {
     @inlinable
     static func drawTextEx(_ font: Font, _ text: String, _ position: Vector2, _ fontSize: Float, _ spacing: Float, _ tint: Color) {
         text.withCString { cString in
-            _RaylibC.DrawTextEx(font, cString, position, fontSize, spacing, tint)
+            RaylibC.DrawTextEx(font, cString, position, fontSize, spacing, tint)
         }
     }
     
@@ -120,14 +120,14 @@ public extension Raylib {
     @inlinable
     static func drawTextPro(_ font: Font, _ text: String, _ position: Vector2, _ origin: Vector2, _ rotation: Float, _ fontSize: Float, _ spacing: Float, _ tint: Color) {
         text.withCString { cString in
-            _RaylibC.DrawTextPro(font, cString, position, origin, rotation, fontSize, spacing, tint)
+            RaylibC.DrawTextPro(font, cString, position, origin, rotation, fontSize, spacing, tint)
         }
     }
     
     /// Draw one character (codepoint)
     @inlinable
     static func drawTextCodepoint(_ font: Font, _ codepoint: Int32, _ position: Vector2, _ fontSize: Float, _ tint: Color) {
-        _RaylibC.DrawTextCodepoint(font, codepoint, position, fontSize, tint)
+        RaylibC.DrawTextCodepoint(font, codepoint, position, fontSize, tint)
     }
 }
 
@@ -138,7 +138,7 @@ public extension Raylib {
     @inlinable
     static func measureText(_ text: String, _ fontSize: Int32) -> Int32 {
         return text.withCString { cString in
-            return _RaylibC.MeasureText(cString, fontSize)
+            return RaylibC.MeasureText(cString, fontSize)
         }
     }
     
@@ -146,26 +146,26 @@ public extension Raylib {
     @inlinable
     static func measureTextEx(_ font: Font, _ text: String, _ fontSize: Float, _ spacing: Float) -> Vector2 {
         return text.withCString { cString in
-            return _RaylibC.MeasureTextEx(font, cString, fontSize, spacing)
+            return RaylibC.MeasureTextEx(font, cString, fontSize, spacing)
         }
     }
     
     /// Get index position for a unicode character on font
     @inlinable
     static func getGlyphIndex(_ font: Font, _ codepoint: Int32) -> Int32 {
-        return _RaylibC.GetGlyphIndex(font, codepoint)
+        return RaylibC.GetGlyphIndex(font, codepoint)
     }
     
     /// Get glyph font info data for a codepoint (unicode character), fallback to '?' if not found
     @inlinable
     static func getGlyphInfo(_ font: Font, _ codepoint: Int32) -> GlyphInfo {
-        return _RaylibC.GetGlyphInfo(font, codepoint)
+        return RaylibC.GetGlyphInfo(font, codepoint)
     }
     
     /// Get glyph rectangle in font atlas for a codepoint (unicode character), fallback to '?' if not found
     @inlinable
     static func GetGlyphAtlasRec(_ font: Font, _ codepoint: Int32) -> Rectangle {
-        return _RaylibC.GetGlyphAtlasRec(font, codepoint)
+        return RaylibC.GetGlyphAtlasRec(font, codepoint)
     }
 }
 
@@ -177,11 +177,11 @@ public extension Raylib {
     static func loadCodepoints(_ text: String) -> [Int32] {
         return text.withCString { cString in
             var count: Int32 = -1
-            let codePointsPointer = _RaylibC.LoadCodepoints(cString, &count)
+            let codePointsPointer = RaylibC.LoadCodepoints(cString, &count)
             let buffer = UnsafeMutableBufferPointer<Int32>(start: codePointsPointer, count: Int(count))
             let array = Array(buffer)
             // Swift will maintian its own memory so we ask raylib to cleanup.= now.
-            _RaylibC.UnloadCodepoints(codePointsPointer)
+            RaylibC.UnloadCodepoints(codePointsPointer)
             return array
         }
     }
@@ -233,7 +233,7 @@ public extension Raylib {
     static func textIsEqual(_ text1: String, _ text2: String) -> Bool {
         return text1.withCString { text1CString in
             return text2.withCString { text2CString in
-                let result = _RaylibC.TextIsEqual(text1CString, text2CString)
+                let result = RaylibC.TextIsEqual(text1CString, text2CString)
 #if os(Windows)
                 return result.rawValue != 0
 #else
@@ -248,7 +248,7 @@ public extension Raylib {
     @inlinable
     static func textLength(_ text: String) -> UInt32 {
         return text.withCString { cString in
-            return _RaylibC.TextLength(cString)
+            return RaylibC.TextLength(cString)
         }
     }
     
@@ -257,7 +257,7 @@ public extension Raylib {
     @inlinable
     static func textSubtext(_ text: String, _ position: Int32, _ length: Int32) -> String {
         return text.withCString { cString in
-            return String(cString: _RaylibC.TextSubtext(cString, position, length))
+            return String(cString: RaylibC.TextSubtext(cString, position, length))
         }
     }
     
@@ -302,7 +302,7 @@ public extension Raylib {
     static func textFindIndex(_ text: String, _ find: String) -> Int32 {
         return text.withCString { cText in
             return find.withCString { cFind in
-                return _RaylibC.TextFindIndex(cText, cFind)
+                return RaylibC.TextFindIndex(cText, cFind)
             }
         }
     }
@@ -312,7 +312,7 @@ public extension Raylib {
     @inlinable
     static func textToUpper(_ text: String) -> String {
         return text.withCString { cString in
-            return String(cString: _RaylibC.TextToUpper(cString))
+            return String(cString: RaylibC.TextToUpper(cString))
         }
     }
     
@@ -321,7 +321,7 @@ public extension Raylib {
     @inlinable
     static func textToLower(_ text: String) -> String {
         return text.withCString { cString in
-            return String(cString: _RaylibC.TextToLower(cString))
+            return String(cString: RaylibC.TextToLower(cString))
         }
     }
     
@@ -329,7 +329,7 @@ public extension Raylib {
     @inlinable
     static func textToPascal(_ text: String) -> String {
         return text.withCString { cString in
-            return String(cString: _RaylibC.TextToPascal(cString))
+            return String(cString: RaylibC.TextToPascal(cString))
         }
     }
     
@@ -338,7 +338,7 @@ public extension Raylib {
     @inlinable
     static func textToInteger(_ text: String) -> Int32 {
         return text.withCString { cString in
-            return _RaylibC.TextToInteger(cString)
+            return RaylibC.TextToInteger(cString)
         }
     }
 }

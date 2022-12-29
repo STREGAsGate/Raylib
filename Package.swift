@@ -75,12 +75,13 @@ var sources: [String] {
 let package = Package(
     name: "Raylib",
     products: [
-        .library(name: "Raylib", targets: ["Raylib", "_RaylibC"]),
+        .library(name: "Raylib", targets: ["Raylib", "RaylibC"]),
+        .library(name: "RaylibC", targets: ["RaylibC"]),
     ],
     targets: [
         .executableTarget(name: "Example", dependencies: ["Raylib"]),
-        .target(name: "Raylib", dependencies: ["_RaylibC"]),
-        .target(name: "_RaylibC", exclude: exclude, sources: sources, publicHeadersPath: "Include", cSettings: cSettings),
+        .target(name: "Raylib", dependencies: ["RaylibC"]),
+        .target(name: "RaylibC", exclude: exclude, sources: sources, publicHeadersPath: "Include", cSettings: cSettings),
     ],
     cLanguageStandard: .c99
 )

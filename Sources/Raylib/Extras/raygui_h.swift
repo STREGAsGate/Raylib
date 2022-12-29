@@ -6,10 +6,10 @@
  * http://stregasgate.com
  */
 
-import _RaylibC
+import RaylibC
 
 // Style property
-@_exported import struct _RaylibC.GuiStyleProp
+@_exported import struct RaylibC.GuiStyleProp
 
 public extension Raylib {
     static let rayGuiVersion = "3.0"
@@ -351,27 +351,27 @@ extension Raylib {
 public extension Raylib {
     /// Enable gui controls (global state)
     @inlinable static func guiEnable() {
-        _RaylibC.GuiEnable()
+        RaylibC.GuiEnable()
     }
     
     /// Disable gui controls (global state)
     @inlinable static func guiDisable() {
-        _RaylibC.GuiDisable()
+        RaylibC.GuiDisable()
     }
     
     /// Lock gui controls (global state)
     @inlinable static func guiLock() {
-        _RaylibC.GuiLock()
+        RaylibC.GuiLock()
     }
     
     /// Unlock gui controls (global state)
     @inlinable static func guiUnlock() {
-        _RaylibC.GuiUnlock()
+        RaylibC.GuiUnlock()
     }
     
     /// Check if gui is locked (global state)
     @inlinable static var isGuiLocked: Bool {
-        let result = _RaylibC.GuiIsLocked()
+        let result = RaylibC.GuiIsLocked()
 #if os(Windows)
         return result.rawValue != 0
 #else
@@ -381,17 +381,17 @@ public extension Raylib {
     
     /// Set gui controls alpha (global state), alpha goes from 0.0f to 1.0f
     @inlinable static func guiFade(_ alpha: Float) {
-        _RaylibC.GuiFade(alpha)
+        RaylibC.GuiFade(alpha)
     }
     
     /// Set gui state (global state)
     @inlinable static func guiSetState(_ state: GuiControlState) {
-        _RaylibC.GuiSetState(state.rawValue)
+        RaylibC.GuiSetState(state.rawValue)
     }
     
     /// Get gui state (global state)
     @inlinable static var guiState: GuiControlState {
-        return GuiControlState(rawValue: _RaylibC.GuiGetState())!
+        return GuiControlState(rawValue: RaylibC.GuiGetState())!
     }
 }
 
@@ -399,12 +399,12 @@ public extension Raylib {
 public extension Raylib {
     /// Set gui custom font (global state)
     @inlinable static func guiSetFont(_ font: Font) {
-        _RaylibC.GuiSetFont(font)
+        RaylibC.GuiSetFont(font)
     }
     
     /// Get gui custom font (global state)
     @inlinable static func guiGetFont() -> Font {
-        return _RaylibC.GuiGetFont()
+        return RaylibC.GuiGetFont()
     }
 }
 
@@ -412,12 +412,12 @@ public extension Raylib {
 public extension Raylib {
     /// Set one style property
     @inlinable static func guiSetStyle(control: GuiControl, property: Int32, value: Int32) {
-        _RaylibC.GuiSetStyle(control.rawValue, property, value)
+        RaylibC.GuiSetStyle(control.rawValue, property, value)
     }
     
     /// Get one style property
     @inlinable static func guiGetStyle(control: GuiControl, property: Int32) -> Int32 {
-        return _RaylibC.GuiGetStyle(control.rawValue, property)
+        return RaylibC.GuiGetStyle(control.rawValue, property)
     }
 }
 
@@ -426,7 +426,7 @@ public extension Raylib {
     /// Window Box control, shows a window that can be closed
     @inlinable static func guiWindowBox(bounds: Rectangle, title: String) -> Bool {
         return title.withCString { cString in
-            let result = _RaylibC.GuiWindowBox(bounds, cString)
+            let result = RaylibC.GuiWindowBox(bounds, cString)
 #if os(Windows)
             return result.rawValue != 0
 #else
@@ -438,25 +438,25 @@ public extension Raylib {
     /// Group Box control with text name
     @inlinable static func guiGroupBox(bounds: Rectangle, text: String) {
         text.withCString { cString in
-            _RaylibC.GuiGroupBox(bounds, cString)
+            RaylibC.GuiGroupBox(bounds, cString)
         }
     }
     
     /// Line separator control, could contain text
     @inlinable static func guiLine(bounds: Rectangle, text: String) {
         text.withCString { cString in
-            _RaylibC.GuiLine(bounds, cString)
+            RaylibC.GuiLine(bounds, cString)
         }
     }
     
     /// Panel control, useful to group controls/
     @inlinable static func guiPanel(bounds: Rectangle) {
-        _RaylibC.GuiPanel(bounds)
+        RaylibC.GuiPanel(bounds)
     }
     
     /// Scroll Panel control
     @inlinable static func guiScrollPanel(bounds: Rectangle, content: Rectangle, scroll: inout Vector2) -> Rectangle {
-        return _RaylibC.GuiScrollPanel(bounds, content, &scroll)
+        return RaylibC.GuiScrollPanel(bounds, content, &scroll)
     }
 }
 
@@ -465,14 +465,14 @@ public extension Raylib {
     /// Label control, shows text
     @inlinable static func guiLabel(bounds: Rectangle, text: String) {
         text.withCString { cString in
-            _RaylibC.GuiLabel(bounds, cString)
+            RaylibC.GuiLabel(bounds, cString)
         }
     }
     
     /// Button control, returns true when clicked
     @inlinable static func guiButton(bounds: Rectangle, text: String) -> Bool {
         return text.withCString { cString in
-            let result = _RaylibC.GuiButton(bounds, cString)
+            let result = RaylibC.GuiButton(bounds, cString)
 #if os(Windows)
             return result.rawValue != 0
 #else
@@ -484,7 +484,7 @@ public extension Raylib {
     /// Label button control, show true when clicked
     @inlinable static func guiLabelButton(bounds: Rectangle, text: String) -> Bool {
         return text.withCString { cString in
-            let result = _RaylibC.GuiLabelButton(bounds, cString)
+            let result = RaylibC.GuiLabelButton(bounds, cString)
 #if os(Windows)
             return result.rawValue != 0
 #else
@@ -499,7 +499,7 @@ public extension Raylib {
 #if os(Windows)
             let active = bool(active ? 1 : 0)
 #endif
-            let result = _RaylibC.GuiToggle(bounds, cString, active)
+            let result = RaylibC.GuiToggle(bounds, cString, active)
 #if os(Windows)
             return result.rawValue != 0
 #else
@@ -511,7 +511,7 @@ public extension Raylib {
     /// Toggle Group control, returns active toggle index
     @inlinable static func guiToggleGroup(bounds: Rectangle, text: String, active: Int32) -> Int32 {
         return text.withCString { cString in
-            return _RaylibC.GuiToggleGroup(bounds, cString, active)
+            return RaylibC.GuiToggleGroup(bounds, cString, active)
         }
     }
     
@@ -521,7 +521,7 @@ public extension Raylib {
 #if os(Windows)
             let checked = bool(checked ? 1 : 0)
 #endif
-            let result = _RaylibC.GuiCheckBox(bounds, cString, checked)
+            let result = RaylibC.GuiCheckBox(bounds, cString, checked)
 #if os(Windows)
             return result.rawValue != 0
 #else
@@ -533,7 +533,7 @@ public extension Raylib {
     /// Combo Box control, returns selected item index
     @inlinable static func guiComboBox(bounds: Rectangle, text: String, active: Int32) -> Int32 {
         return text.withCString { cString in
-            return _RaylibC.GuiComboBox(bounds, cString, active)
+            return RaylibC.GuiComboBox(bounds, cString, active)
         }
     }
     
@@ -543,7 +543,7 @@ public extension Raylib {
 #if os(Windows)
             let editMode = bool(editMode ? 1 : 0)
 #endif
-            let result = _RaylibC.GuiDropdownBox(bounds, cString, &active, editMode)
+            let result = RaylibC.GuiDropdownBox(bounds, cString, &active, editMode)
 #if os(Windows)
             return result.rawValue != 0
 #else
@@ -558,7 +558,7 @@ public extension Raylib {
 #if os(Windows)
             let editMode = bool(editMode ? 1 : 0)
 #endif
-            let result = _RaylibC.GuiSpinner(bounds, cString, &value, minVlaue, maxValue, editMode)
+            let result = RaylibC.GuiSpinner(bounds, cString, &value, minVlaue, maxValue, editMode)
 #if os(Windows)
             return result.rawValue != 0
 #else
@@ -573,7 +573,7 @@ public extension Raylib {
 #if os(Windows)
             let editMode = bool(editMode ? 1 : 0)
 #endif
-            let result = _RaylibC.GuiValueBox(bounds, cString, &value, minValue, maxValue, editMode)
+            let result = RaylibC.GuiValueBox(bounds, cString, &value, minValue, maxValue, editMode)
 #if os(Windows)
             return result.rawValue != 0
 #else
@@ -589,7 +589,7 @@ public extension Raylib {
 #if os(Windows)
             let editMode = bool(editMode ? 1 : 0)
 #endif
-            return _RaylibC.GuiTextBox(bounds, cString.baseAddress, Int32(text.utf8.count), editMode)
+            return RaylibC.GuiTextBox(bounds, cString.baseAddress, Int32(text.utf8.count), editMode)
         }
         text = String(cString: cString)
 #if os(Windows)
@@ -606,7 +606,7 @@ public extension Raylib {
 #if os(Windows)
             let editMode = bool(editMode ? 1 : 0)
 #endif
-            return _RaylibC.GuiTextBoxMulti(bounds, cString.baseAddress, Int32(text.utf8.count), editMode)
+            return RaylibC.GuiTextBoxMulti(bounds, cString.baseAddress, Int32(text.utf8.count), editMode)
         }
         text = String(cString: cString)
 #if os(Windows)
@@ -620,7 +620,7 @@ public extension Raylib {
     @inlinable static func guiSlider(bounds: Rectangle, textLeft: String, textRight: String, value: Float, minValue: Float, maxValue: Float) -> Float {
         return textLeft.withCString { leftCString in
             return textRight.withCString { rightCString in
-                return _RaylibC.GuiSlider(bounds, leftCString, rightCString, value, minValue, maxValue)
+                return RaylibC.GuiSlider(bounds, leftCString, rightCString, value, minValue, maxValue)
             }
         }
     }
@@ -629,7 +629,7 @@ public extension Raylib {
     @inlinable static func guiSliderBar(bounds: Rectangle, textLeft: String, textRight: String, value: Float, minValue: Float, maxValue: Float) -> Float {
         return textLeft.withCString { leftCString in
             return textRight.withCString { rightCString in
-                return _RaylibC.GuiSliderBar(bounds, leftCString, rightCString, value, minValue, maxValue)
+                return RaylibC.GuiSliderBar(bounds, leftCString, rightCString, value, minValue, maxValue)
             }
         }
     }
@@ -638,7 +638,7 @@ public extension Raylib {
     @inlinable static func guiProgressBar(bounds: Rectangle, textLeft: String, textRight: String, value: Float, minValue: Float, maxValue: Float) -> Float {
         return textLeft.withCString { leftCString in
             return textRight.withCString { rightCString in
-                return _RaylibC.GuiProgressBar(bounds, leftCString, rightCString, value, minValue, maxValue)
+                return RaylibC.GuiProgressBar(bounds, leftCString, rightCString, value, minValue, maxValue)
             }
         }
     }
@@ -646,25 +646,25 @@ public extension Raylib {
     /// Status Bar control, shows info text
     @inlinable static func guiStatusBar(bounds: Rectangle, text: String) {
         text.withCString { cString in
-            _RaylibC.GuiStatusBar(bounds, cString)
+            RaylibC.GuiStatusBar(bounds, cString)
         }
     }
     
     /// Dummy control for placeholders
     @inlinable static func guiDummyRec(bounds: Rectangle, text: String) {
         text.withCString { cString in
-            _RaylibC.GuiDummyRec(bounds, cString)
+            RaylibC.GuiDummyRec(bounds, cString)
         }
     }
     
     /// Scroll Bar control
     @inlinable static func guiScrollBar(bounds: Rectangle, value: Int32, minValue: Int32, maxValue: Int32) -> Int32 {
-        return _RaylibC.GuiScrollBar(bounds, value, minValue, maxValue)
+        return RaylibC.GuiScrollBar(bounds, value, minValue, maxValue)
     }
     
     /// Grid control
     @inlinable static func guiGrid(bounds: Rectangle, spacing: Float, subDivs: Int32) -> Vector2 {
-        return _RaylibC.GuiGrid(bounds, spacing, subDivs)
+        return RaylibC.GuiGrid(bounds, spacing, subDivs)
     }
 }
 
@@ -673,7 +673,7 @@ public extension Raylib {
     /// List View control, returns selected list item index
     @inlinable static func guiListView(bounds: Rectangle, text: String, scrollIndex: inout Int32, active: Int32) -> Int32 {
         return text.withCString { cString in
-            return _RaylibC.GuiListView(bounds, cString, &scrollIndex, active)
+            return RaylibC.GuiListView(bounds, cString, &scrollIndex, active)
         }
     }
     
@@ -690,7 +690,7 @@ public extension Raylib {
         return title.withCString { title in
             return message.withCString { message in
                 return buttons.withCString { buttons in
-                    return _RaylibC.GuiMessageBox(bounds, title, message, buttons)
+                    return RaylibC.GuiMessageBox(bounds, title, message, buttons)
                 }
             }
         }
@@ -703,7 +703,7 @@ public extension Raylib {
                 return buttons.withCString { buttons in
                     var cString = text.cString(using: .utf8)!
                     let returnValue = cString.withUnsafeMutableBufferPointer { cString in
-                        return _RaylibC.GuiTextInputBox(bounds, title, message, buttons, &cString)
+                        return RaylibC.GuiTextInputBox(bounds, title, message, buttons, &cString)
                     }
                     text = String(cString: cString)
                     return returnValue
@@ -714,22 +714,22 @@ public extension Raylib {
     
     /// Color Picker control (multiple color controls)
     @inlinable static func guiColorPicker(bounds: Rectangle, color: Color) -> Color {
-        return _RaylibC.GuiColorPicker(bounds, color)
+        return RaylibC.GuiColorPicker(bounds, color)
     }
     
     /// Color Panel control
     @inlinable static func guiColorPanel(bounds: Rectangle, color: Color) -> Color {
-        return _RaylibC.GuiColorPanel(bounds, color)
+        return RaylibC.GuiColorPanel(bounds, color)
     }
     
     /// Color Bar Alpha control
     @inlinable static func guiColorBarAlpha(bounds: Rectangle, alpha: Float) -> Float {
-        return _RaylibC.GuiColorBarAlpha(bounds, alpha)
+        return RaylibC.GuiColorBarAlpha(bounds, alpha)
     }
     
     /// Color Bar Hue control
     @inlinable static func guiColorBarHue(bounds: Rectangle, value: Float) -> Float {
-        return _RaylibC.GuiColorBarHue(bounds, value)
+        return RaylibC.GuiColorBarHue(bounds, value)
     }
 }
 
@@ -738,13 +738,13 @@ public extension Raylib {
     /// Load style file over global style variable (.rgs)
     @inlinable static func guiLoadStyle(filename: String) {
         filename.withCString { cString in
-            _RaylibC.GuiLoadStyle(cString)
+            RaylibC.GuiLoadStyle(cString)
         }
     }
     
     /// Load style default over global style
     @inlinable static func guiLoadStyleDefault() {
-        _RaylibC.GuiLoadStyleDefault()
+        RaylibC.GuiLoadStyleDefault()
     }
 }
 
@@ -1013,7 +1013,7 @@ public extension Raylib {
     /// Get text with icon id prepended (if supported)
     @inlinable static func guiIconText(iconId: Int32, text: String) -> String {
         return text.withCString { cString in
-            if let cString = _RaylibC.GuiIconText(iconId, cString) {
+            if let cString = RaylibC.GuiIconText(iconId, cString) {
                 return String(cString: cString)
             }
             fatalError("Should return nil here, becuase nil is possible.")
@@ -1024,38 +1024,38 @@ public extension Raylib {
 // Gui icons functionality
 public extension Raylib {
     @inlinable static func guiDrawIcon(icon: GuiIconName, posX: Int32, posY: Int32, pixelSize: Int32, color: Color) {
-        _RaylibC.GuiDrawIcon(icon.rawValue, posX, posY, pixelSize, color)
+        RaylibC.GuiDrawIcon(icon.rawValue, posX, posY, pixelSize, color)
     }
     
     /// Get full icons data pointer
     @inlinable static func guiGetIcons() -> UnsafeMutablePointer<UInt32> {
-        return _RaylibC.GuiGetIcons()
+        return RaylibC.GuiGetIcons()
     }
     
     /// Get icon bit data
     @inlinable static func guiGetIconData(icon: GuiIconName) -> UnsafeMutablePointer<UInt32> {
-        return _RaylibC.GuiGetIconData(icon.rawValue)
+        return RaylibC.GuiGetIconData(icon.rawValue)
     }
     
     /// Set icon bit data
     @inlinable static func guiSetIconData(icon: GuiIconName, data: [UInt32]) {
         var data = data
-        _RaylibC.GuiSetIconData(icon.rawValue, &data)
+        RaylibC.GuiSetIconData(icon.rawValue, &data)
     }
     
     /// Set icon pixel value
     @inlinable static func guiSetIconPixel(icon: GuiIconName, x: Int32, y: Int32) {
-        _RaylibC.GuiSetIconPixel(icon.rawValue, x, y)
+        RaylibC.GuiSetIconPixel(icon.rawValue, x, y)
     }
     
     /// Clear icon pixel value/
     @inlinable static func guiClearIconPixel(icon: GuiIconName, x: Int32, y: Int32) {
-        _RaylibC.GuiClearIconPixel(icon.rawValue, x, y)
+        RaylibC.GuiClearIconPixel(icon.rawValue, x, y)
     }
     
     /// Check icon pixel value
     @inlinable static func guiCheckIconPixel(icon: GuiIconName, x: Int32, y: Int32) -> Bool {
-        let result = _RaylibC.GuiCheckIconPixel(icon.rawValue, x, y)
+        let result = RaylibC.GuiCheckIconPixel(icon.rawValue, x, y)
 #if os(Windows)
         return result.rawValue != 0
 #else

@@ -6,7 +6,7 @@
  * http://stregasgate.com
  */
 
-import _RaylibC
+import RaylibC
 
 public extension Texture {
     /// Load texture from image data

@@ -9,7 +9,7 @@
 // This file contains deprecations for SwiftRaylib from Raylib 3.7 to 4.0
 // Swift will guide you through upgrading, and this file contains the hints it needs to do so.
 
-import _RaylibC
+import RaylibC
 
 
 //MARK: - Raylib.swift
@@ -74,28 +74,28 @@ public extension Raylib {
     @available(*, deprecated, renamed: "getMeshBoundingBox()")
     @inlinable
     static func meshBoundingBox(_ mesh: Mesh) -> BoundingBox {
-        return _RaylibC.GetMeshBoundingBox(mesh)
+        return RaylibC.GetMeshBoundingBox(mesh)
     }
     
     /// Compute mesh tangents
     @available(*, deprecated, renamed: "genMeshTangents()")
     @inlinable
     static func meshTangents(_ mesh: inout Mesh) {
-        _RaylibC.GenMeshTangents(&mesh)
+        RaylibC.GenMeshTangents(&mesh)
     }
     
     /// Compute mesh binormals
     @available(*, deprecated, renamed: "genMeshBinormals()")
     @inlinable
     static func meshBinormals(_ mesh: inout Mesh) {
-        _RaylibC.GenMeshBinormals(&mesh)
+        RaylibC.GenMeshBinormals(&mesh)
     }
     
     /// Detect collision between ray and sphere
     @available(*, deprecated, message: "Use getRayCollisionSphere()")
     @inlinable
     static func checkCollisionRaySphere(_ ray: Ray, _ center: Vector3, _ radius: Float) -> Bool {
-        let result = _RaylibC.GetRayCollisionSphere(ray, center, radius).hit
+        let result = RaylibC.GetRayCollisionSphere(ray, center, radius).hit
 #if os(Windows)
         return result.rawValue != 0
 #else
@@ -107,7 +107,7 @@ public extension Raylib {
     @available(*, deprecated, message: "Use getRayCollisionSphere()")
     @inlinable
     static func checkCollisionRaySphereEx(_ ray: Ray, _ center: Vector3, _ radius: Float) -> Vector3? {
-        let collision = _RaylibC.GetRayCollisionSphere(ray, center, radius)
+        let collision = RaylibC.GetRayCollisionSphere(ray, center, radius)
 #if os(Windows)
         if collision.hit.rawValue != 0 {
             return collision.point
@@ -206,14 +206,14 @@ public extension Raylib {
 @available(*, deprecated, renamed: "Vector3.minimum()")
 @inlinable
 public func min(_ v1: Vector3, _ v2: Vector3) -> Vector3 {
-    return _RaylibC.Vector3Min(v1, v2)
+    return RaylibC.Vector3Min(v1, v2)
 }
 
 /// Return max value for each pair of components
 @available(*, deprecated, renamed: "Vector3.maximum()")
 @inlinable
 public func max(_ v1: Vector3, _ v2: Vector3) -> Vector3 {
-    return _RaylibC.Vector3Max(v1, v2)
+    return RaylibC.Vector3Max(v1, v2)
 }
 
 
@@ -223,7 +223,7 @@ public extension Raylib {
     @available(*, deprecated, renamed: "isMusicStreamPlaying()")
     @inlinable
     static func isMusicPlaying(_ music: Music) -> Bool {
-        let result = _RaylibC.IsMusicStreamPlaying(music)
+        let result = RaylibC.IsMusicStreamPlaying(music)
 #if os(Windows)
         return result.rawValue != 0
 #else
@@ -235,14 +235,14 @@ public extension Raylib {
     @available(*, deprecated, renamed: "loadAudioStream()")
     @inlinable
     static func initAudioStream(_ sampleRate: UInt32, _ sampleSize: UInt32, _ channels: UInt32) -> AudioStream {
-        return _RaylibC.LoadAudioStream(sampleRate, sampleSize, channels)
+        return RaylibC.LoadAudioStream(sampleRate, sampleSize, channels)
     }
     
     /// Close audio stream and free memory
     @available(*, deprecated, renamed: "unloadAudioStream()")
     @inlinable
     static func closeAudioStream(_ stream: AudioStream) {
-        _RaylibC.UnloadAudioStream(stream)
+        RaylibC.UnloadAudioStream(stream)
     }
 }
 
@@ -259,7 +259,7 @@ public extension Raylib {
     @available(*, deprecated, renamed: "getTouchPointCount()")
     @inlinable
     static func getTouchPointsCount() -> Int32 {
-        return _RaylibC.GetTouchPointCount()
+        return RaylibC.GetTouchPointCount()
     }
 }
 
