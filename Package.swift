@@ -42,7 +42,8 @@ var sources: [String] {
     array.append(contentsOf: raylib.map({"UnmodifiedRaylibSrc/" + $0}))
     
     // --- Modified ----
-    //Copy of raygui.h, no source code changes. Needed for implimentations. The Makefile made this copy at build time.
+    // A copy of raygui.h with no source code changes. Needed for implimentations.
+    // The original Makefile created this copy at build time.
     array.append("ModifiedRaylibSrc/extras/raygui.c")
     
     // GLFW Common
@@ -75,10 +76,9 @@ let package = Package(
     name: "Raylib",
     products: [
         .library(name: "Raylib", targets: ["Raylib", "_RaylibC"]),
-        .executable(name: "Example", targets: ["Example"])
     ],
     targets: [
-        .target(name: "Example", dependencies: ["Raylib"]),
+        .executableTarget(name: "Example", dependencies: ["Raylib"]),
         .target(name: "Raylib", dependencies: ["_RaylibC"]),
         .target(name: "_RaylibC", exclude: exclude, sources: sources, publicHeadersPath: "Include", cSettings: cSettings),
     ],
