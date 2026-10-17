@@ -261,7 +261,7 @@ public extension Raylib {
     static func checkCollisionRecs(_ rec1: Rectangle, _ rec2: Rectangle) -> Bool {
         let result = RaylibC.CheckCollisionRecs(rec1, rec2)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -272,7 +272,7 @@ public extension Raylib {
     static func checkCollisionCircles(_ center1: Vector2, _ radius1: Float, _ center2: Vector2, _ radius2: Float) -> Bool {
         let result = RaylibC.CheckCollisionCircles(center1, radius1, center2, radius2)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -283,7 +283,7 @@ public extension Raylib {
     static func checkCollisionCircleRec(_ center: Vector2, _ radius: Float, _ rec: Rectangle) -> Bool {
         let result = RaylibC.CheckCollisionCircleRec(center, radius, rec)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -294,7 +294,7 @@ public extension Raylib {
     static func checkCollisionPointRec(_ point: Vector2, _ rec: Rectangle) -> Bool {
         let result = RaylibC.CheckCollisionPointRec(point, rec)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -305,7 +305,7 @@ public extension Raylib {
     static func checkCollisionPointCircle(_ point: Vector2, _ center: Vector2, _ radius: Float) -> Bool {
         let result = RaylibC.CheckCollisionPointCircle(point, center, radius)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -316,7 +316,7 @@ public extension Raylib {
     static func checkCollisionPointTriangle(_ point: Vector2, _ p1: Vector2, _ p2: Vector2, _ p3: Vector2) -> Bool {
         let result = RaylibC.CheckCollisionPointTriangle(point, p1, p2, p3)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -328,7 +328,7 @@ public extension Raylib {
         var collisionPoint = Vector2()
         let result = RaylibC.CheckCollisionLines(startPos1, endPos1, startPos2, endPos2, &collisionPoint)
 #if os(Windows)
-        if result.rawValue != 0 {
+        if result {
             return collisionPoint
         }
 #else
@@ -344,7 +344,7 @@ public extension Raylib {
     static func checkCollisionPointLine(_ point: Vector2, _ p1: Vector2, _ p2: Vector2, _ threshold: Int32) -> Bool {
         let result = RaylibC.CheckCollisionPointLine(point, p1, p2, threshold)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif

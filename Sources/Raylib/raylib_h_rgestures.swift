@@ -23,7 +23,7 @@ public extension Raylib {
     static func isGestureDetected(_ gesture: Gestures) -> Bool {
         let result = RaylibC.IsGestureDetected(gesture.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif

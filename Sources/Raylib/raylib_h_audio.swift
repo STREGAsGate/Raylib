@@ -30,7 +30,7 @@ public extension Raylib {
     static var isAudioDeviceReady: Bool {
         let result = RaylibC.IsAudioDeviceReady()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -100,7 +100,7 @@ public extension Raylib {
         return fileName.withCString { cString in
             let result = RaylibC.ExportWave(wave, cString)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -113,7 +113,7 @@ public extension Raylib {
         return fileName.withCString { cString in
             let result = RaylibC.ExportWaveAsCode(wave, cString)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -171,7 +171,7 @@ public extension Raylib {
     static func isSoundPlaying(_ sound: Sound) -> Bool {
         let result = RaylibC.IsSoundPlaying(sound)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -260,7 +260,7 @@ public extension Raylib {
     static func isMusicStreamPlaying(_ music: Music) -> Bool {
         let result = RaylibC.IsMusicStreamPlaying(music)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -347,7 +347,7 @@ public extension Raylib {
     static func isAudioStreamProcessed(_ stream: AudioStream) -> Bool {
         let result = RaylibC.IsAudioStreamPlaying(stream)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -376,7 +376,7 @@ public extension Raylib {
     static func isAudioStreamPlaying(_ stream: AudioStream) -> Bool {
         let result = RaylibC.IsAudioStreamPlaying(stream)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif

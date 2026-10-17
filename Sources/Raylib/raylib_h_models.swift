@@ -238,7 +238,7 @@ public extension Raylib {
     @inlinable
     static func uploadMesh(_ mesh: inout Mesh, _ dynamic: Bool) {
 #if os(Windows)
-        let dynamic = bool(dynamic ? 1 : 0)
+        let dynamic = dynamic
 #endif
         RaylibC.UploadMesh(&mesh, dynamic)
     }
@@ -274,7 +274,7 @@ public extension Raylib {
         return fileName.withCString { cStirng in
             let result = RaylibC.ExportMesh(mesh, cStirng)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -445,7 +445,7 @@ public extension Raylib {
     static func isModelAnimationValid(_ model: Model, _ anim: ModelAnimation) -> Bool {
         let result = RaylibC.IsModelAnimationValid(model, anim)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -459,7 +459,7 @@ public extension Raylib {
     static func checkCollisionSpheres(_ center1: Vector3, _ radius1: Float, _ center2: Vector3, _ radius2: Float) -> Bool {
         let result = RaylibC.CheckCollisionSpheres(center1, radius1, center2, radius2)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -470,7 +470,7 @@ public extension Raylib {
     static func checkCollisionBoxes(_ box1: BoundingBox, _ box2: BoundingBox) -> Bool {
         let result = RaylibC.CheckCollisionBoxes(box1, box2)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -481,7 +481,7 @@ public extension Raylib {
     static func checkCollisionBoxSphere(_ box: BoundingBox, _ center: Vector3, _ radius: Float) -> Bool {
         let result = RaylibC.CheckCollisionBoxSphere(box, center, radius)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif

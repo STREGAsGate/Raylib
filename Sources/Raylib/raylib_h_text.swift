@@ -235,7 +235,7 @@ public extension Raylib {
             return text2.withCString { text2CString in
                 let result = RaylibC.TextIsEqual(text1CString, text2CString)
 #if os(Windows)
-                return result.rawValue != 0
+                return result
 #else
                 return result
 #endif

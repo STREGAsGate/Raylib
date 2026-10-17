@@ -26,7 +26,7 @@ public extension Raylib {
     static var windowShouldClose: Bool {
         let result = RaylibC.WindowShouldClose()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -43,7 +43,7 @@ public extension Raylib {
     static var isWindowReady: Bool {
         let result = RaylibC.IsWindowReady()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -54,7 +54,7 @@ public extension Raylib {
     static var isWindowFullscreen: Bool {
         let result = RaylibC.IsWindowFullscreen()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -65,7 +65,7 @@ public extension Raylib {
     static var isWindowHidden: Bool {
         let result = RaylibC.IsWindowHidden()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -76,7 +76,7 @@ public extension Raylib {
     static var isWindowMinimized: Bool {
         let result = RaylibC.IsWindowMinimized()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -87,7 +87,7 @@ public extension Raylib {
     static var isWindowMaximized: Bool {
         let result = RaylibC.IsWindowMaximized()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -98,7 +98,7 @@ public extension Raylib {
     static var isWindowFocused: Bool {
         let result = RaylibC.IsWindowFocused()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -109,7 +109,7 @@ public extension Raylib {
     static var isWindowResized: Bool {
         let result = RaylibC.IsWindowResized()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -120,7 +120,7 @@ public extension Raylib {
     static func isWindowState(_ flag: ConfigFlags) -> Bool {
         let result = RaylibC.IsWindowState(flag.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -348,7 +348,7 @@ public extension Raylib {
     static var isCursorHidden: Bool {
         let result = RaylibC.IsCursorHidden()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -371,7 +371,7 @@ public extension Raylib {
     static var isCursorOnScreen: Bool {
         let result = RaylibC.IsCursorOnScreen()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -777,7 +777,7 @@ public extension Raylib {
         return fileName.withCString { cString in
             let result = RaylibC.SaveFileData(cString, data, bytesToWrite)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -809,7 +809,7 @@ public extension Raylib {
             return _text.withUnsafeMutableBufferPointer { textCString in
                 let result = RaylibC.SaveFileText(fileCString, textCString.baseAddress)
 #if os(Windows)
-                return result.rawValue != 0
+                return result
 #else
                 return result
 #endif
@@ -823,7 +823,7 @@ public extension Raylib {
         return fileName.withCString { cString in
             let result = RaylibC.FileExists(cString)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -836,7 +836,7 @@ public extension Raylib {
         return dirPath.withCString { cString in
             let result = RaylibC.DirectoryExists(cString)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -850,7 +850,7 @@ public extension Raylib {
             return ext.withCString { extCString in
                 let result = RaylibC.IsFileExtension(fileCString, extCString)
 #if os(Windows)
-                return result.rawValue != 0
+                return result
 #else
                 return result
 #endif
@@ -927,7 +927,7 @@ public extension Raylib {
         return dir.withCString { cString in
             let result = RaylibC.ChangeDirectory(cString)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -939,7 +939,7 @@ public extension Raylib {
     static var isFileDropped: Bool {
         let result = RaylibC.IsFileDropped()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1004,7 +1004,7 @@ public extension Raylib {
     static func saveStorageValue(_ position: UInt32, _ value: Int32) -> Bool {
         let result = RaylibC.SaveStorageValue(position, value)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1037,7 +1037,7 @@ public extension Raylib {
     static func isKeyPressed(_ key: KeyboardKey) -> Bool {
         let result = RaylibC.IsKeyPressed(key.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1048,7 +1048,7 @@ public extension Raylib {
     static func isKeyDown(_ key: KeyboardKey) -> Bool {
         let result = RaylibC.IsKeyDown(key.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1059,7 +1059,7 @@ public extension Raylib {
     static func isKeyReleased(_ key: KeyboardKey) -> Bool {
         let result = RaylibC.IsKeyReleased(key.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1070,7 +1070,7 @@ public extension Raylib {
     static func isKeyUp(_ key: KeyboardKey) -> Bool {
         let result = RaylibC.IsKeyUp(key.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1107,7 +1107,7 @@ public extension Raylib {
     static func isGamepadAvailable(_ gamepad: Int32) -> Bool {
         let result = RaylibC.IsGamepadAvailable(gamepad)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1124,7 +1124,7 @@ public extension Raylib {
     static func isGamepadButtonPressed(_ gamepad: Int32, _ button: GamepadButton) -> Bool {
         let result = RaylibC.IsGamepadButtonPressed(gamepad, button.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1135,7 +1135,7 @@ public extension Raylib {
     static func isGamepadButtonDown(_ gamepad: Int32, _ button: GamepadButton) -> Bool {
         let result = RaylibC.IsGamepadButtonDown(gamepad, button.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1146,7 +1146,7 @@ public extension Raylib {
     static func isGamepadButtonReleased(_ gamepad: Int32, _ button: GamepadButton) -> Bool {
         let result = RaylibC.IsGamepadButtonReleased(gamepad, button.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1157,7 +1157,7 @@ public extension Raylib {
     static func isGamepadButtonUp(_ gamepad: Int32, _ button: GamepadButton) -> Bool {
         let result = RaylibC.IsGamepadButtonUp(gamepad, button.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1198,7 +1198,7 @@ public extension Raylib {
     static func isMouseButtonPressed(_ button: MouseButton) -> Bool {
         let result = RaylibC.IsMouseButtonPressed(button.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1209,7 +1209,7 @@ public extension Raylib {
     static func isMouseButtonDown(_ button: MouseButton) -> Bool {
         let result = RaylibC.IsMouseButtonDown(button.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1220,7 +1220,7 @@ public extension Raylib {
     static func isMouseButtonReleased(_ button: MouseButton) -> Bool {
         let result = RaylibC.IsMouseButtonReleased(button.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1231,7 +1231,7 @@ public extension Raylib {
     static func isMouseButtonUp(_ button: MouseButton) -> Bool {
         let result = RaylibC.IsMouseButtonUp(button.rawValue)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif

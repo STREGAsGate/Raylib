@@ -70,7 +70,7 @@ public extension Raylib {
         return fileName.withCString { cString in
             let result = RaylibC.ExportImage(image, cString)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -83,7 +83,7 @@ public extension Raylib {
         return fileName.withCString { cString in
             let result = RaylibC.ExportImageAsCode(image, cString)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif

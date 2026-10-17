@@ -373,7 +373,7 @@ public extension Raylib {
     @inlinable static var isGuiLocked: Bool {
         let result = RaylibC.GuiIsLocked()
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -428,7 +428,7 @@ public extension Raylib {
         return title.withCString { cString in
             let result = RaylibC.GuiWindowBox(bounds, cString)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -474,7 +474,7 @@ public extension Raylib {
         return text.withCString { cString in
             let result = RaylibC.GuiButton(bounds, cString)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -486,7 +486,7 @@ public extension Raylib {
         return text.withCString { cString in
             let result = RaylibC.GuiLabelButton(bounds, cString)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -497,11 +497,11 @@ public extension Raylib {
     @inlinable static func guiToggle(bounds: Rectangle, text: String, active: Bool) -> Bool {
         return text.withCString { cString in
 #if os(Windows)
-            let active = bool(active ? 1 : 0)
+            let active = active
 #endif
             let result = RaylibC.GuiToggle(bounds, cString, active)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -519,11 +519,11 @@ public extension Raylib {
     @inlinable static func guiCheckBox(bounds: Rectangle, text: String, checked: Bool) -> Bool {
         return text.withCString { cString in
 #if os(Windows)
-            let checked = bool(checked ? 1 : 0)
+            let checked = checked
 #endif
             let result = RaylibC.GuiCheckBox(bounds, cString, checked)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -541,11 +541,11 @@ public extension Raylib {
     @inlinable static func guiDropdownBox(bounds: Rectangle, text: String, active: inout Int32, editMode: Bool) -> Bool {
         return text.withCString { cString in
 #if os(Windows)
-            let editMode = bool(editMode ? 1 : 0)
+            let editMode = editMode
 #endif
             let result = RaylibC.GuiDropdownBox(bounds, cString, &active, editMode)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -556,11 +556,11 @@ public extension Raylib {
     @inlinable static func guiSpinner(bounds: Rectangle, text: String, value: inout Int32, minVlaue: Int32, maxValue: Int32, editMode: Bool) -> Bool {
         return text.withCString { cString in
 #if os(Windows)
-            let editMode = bool(editMode ? 1 : 0)
+            let editMode = editMode
 #endif
             let result = RaylibC.GuiSpinner(bounds, cString, &value, minVlaue, maxValue, editMode)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -571,11 +571,11 @@ public extension Raylib {
     @inlinable static func guiValueBox(bounds: Rectangle, text: String, value: inout Int32, minValue: Int32, maxValue: Int32, editMode: Bool) -> Bool {
         return text.withCString { cString in
 #if os(Windows)
-            let editMode = bool(editMode ? 1 : 0)
+            let editMode = editMode
 #endif
             let result = RaylibC.GuiValueBox(bounds, cString, &value, minValue, maxValue, editMode)
 #if os(Windows)
-            return result.rawValue != 0
+            return result
 #else
             return result
 #endif
@@ -587,13 +587,13 @@ public extension Raylib {
         var cString = text.cString(using: .utf8)!
         let result = cString.withUnsafeMutableBufferPointer { cString in
 #if os(Windows)
-            let editMode = bool(editMode ? 1 : 0)
+            let editMode = editMode
 #endif
             return RaylibC.GuiTextBox(bounds, cString.baseAddress, Int32(text.utf8.count), editMode)
         }
         text = String(cString: cString)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -604,13 +604,13 @@ public extension Raylib {
         var cString = text.cString(using: .utf8)!
         let result = cString.withUnsafeMutableBufferPointer { cString in
 #if os(Windows)
-            let editMode = bool(editMode ? 1 : 0)
+            let editMode = editMode
 #endif
             return RaylibC.GuiTextBoxMulti(bounds, cString.baseAddress, Int32(text.utf8.count), editMode)
         }
         text = String(cString: cString)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
@@ -1057,7 +1057,7 @@ public extension Raylib {
     @inlinable static func guiCheckIconPixel(icon: GuiIconName, x: Int32, y: Int32) -> Bool {
         let result = RaylibC.GuiCheckIconPixel(icon.rawValue, x, y)
 #if os(Windows)
-        return result.rawValue != 0
+        return result
 #else
         return result
 #endif
